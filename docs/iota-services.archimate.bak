@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:archimate="http://www.bolton.ac.uk/archimate" name="StutzTracker" id="039c697c" version="2.2.1">
+  <folder name="Business" id="e51fe6a2" type="business"/>
+  <folder name="Application" id="ee2efa31" type="application"/>
+  <folder name="Technology" id="f97001a0" type="technology">
+    <element xsi:type="archimate:Node" id="8ed47e5c" name="Server"/>
+    <element xsi:type="archimate:Device" id="8b50af66" name="SecTracker"/>
+  </folder>
+  <folder name="Motivation" id="1b8fdd6d" type="motivation"/>
+  <folder name="Implementation &amp; Migration" id="5e294925" type="implementation_migration"/>
+  <folder name="Connectors" id="4a11e0ec" type="connectors"/>
+  <folder name="Relations" id="333833ae" type="relations"/>
+  <folder name="Views" id="11371912" type="diagrams">
+    <element xsi:type="archimate:ArchimateDiagramModel" id="53d8e1c5" name="IOT Platform">
+      <child xsi:type="archimate:DiagramObject" id="70c88820" textAlignment="2" archimateElement="8ed47e5c">
+        <bounds x="192" y="228" width="280" height="172"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="516983f8" textAlignment="2" archimateElement="8b50af66">
+        <bounds x="264" y="72"/>
+      </child>
+    </element>
+  </folder>
+</archimate:model>
