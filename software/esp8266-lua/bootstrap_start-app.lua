@@ -1,7 +1,5 @@
-global BOOTSTRAP_FILE_APP_CONTENTS = "app.lua";
-global BOOTSTRAP_FILE_APP_INFO = "app.info";
 
-function bootstrap_startApp()
+function _bootstrap_startApp()
 
   print("START_APP -- Starting App...");
 
@@ -13,29 +11,29 @@ function bootstrap_startApp()
   if(fc and fi) then
     print("START_APP -- App files found");
 
-    local f = file.open(BOOTSTRAP_FILE_APP_INFO, "r");
-    local _contents = file.read();
-    file.close();
-    local _app_info = cjson.decode(_contents);
+    local _app_info = _utils_getAppInfoFromFile();
 
     print("START_APP -- Checking app integrity...");
     local fh = crypto.toHex(crypto.fhash("sha1", BOOTSTRAP_FILE_APP_CONTENTS));
 
-    if(fh == _app_info_hash) then
-      print("START_APP -- File hash matches app info. hash=" .. fh);
+    if(fh == _app_info.hash) then
+      print("START_APP -- App file hash matches app info. hash=" .. fh);
 
       print("START_APP -- Incrementing watchdog counter");
       _bootstrap_incrementWatchDogCounter();
 
-      print("");
+      print("START_APP --");
       print("===========================================");
-      print("START_APP -- Starting app version " .. _app_info.version);
+      print("  STARTING APP '" .. _app_info.name .. "'...");
+      print("      version = " .. _app_info.version);
+      print("         file = " .. BOOTSTRAP_FILE_APP_CONTENTS);
+      print("         hash = " .. _app_info.hash);
       print("===========================================");
       print("");
-      dofile("app.lua");
+      dofile(BOOTSTRAP_FILE_APP_CONTENTS);
 
     else
-      print("START_APP -- Local file hash doesn't match app info. App won't run. Activating captive portal.");
+      print("START_APP -- App file hash doesn't match app info. App won't run. Activating captive portal.");
       _bootstrap_activateCaptivePortal();
     end
 
