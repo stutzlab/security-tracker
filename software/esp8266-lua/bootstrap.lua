@@ -52,10 +52,10 @@ function bootstrap_resetWatchDog()
   _bootstrap_resetWatchDogCounter();
 end
 
-function bootstrap_forceCaptivePortal()
+function bootstrap_forceCaptivePortalWifi()
   _bootstrap_incrementWatchDogCounter();
   _bootstrap_incrementWatchDogCounter();
   _bootstrap_incrementWatchDogCounter();
   _bootstrap_incrementWatchDogCounter();
-  bootstrap_activateCaptivePortal();
+  bootstrap_activateCaptivePortal(_bootstrap_wifiLoginRequestHandler);
 end

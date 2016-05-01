@@ -62,7 +62,6 @@ function _bootstrap_checkForUpdates()
               __log("APP_UPDATE -- Insufficient disk detected. Performing a factory reset to cleanup space...");
               _bootstrap_performFactoryReset();
             end
-
           end
 
           if(downloadNewApp) then
