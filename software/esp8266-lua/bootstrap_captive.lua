@@ -1,18 +1,18 @@
-global bootstrap_captive_activated;
-bootstrap_captive_activated = false;
+global _bootstrap_captive_activated = false;
 
 wifiStaStatusTxt = "No Info";
 wifiStaStatus = "-1";
 networksJson = "{'status':'pending'}";
 
-function _bootstrap_activateCaptivePortal()
+--requestHandler(httpStatus, contentType, responseBody)
+function _bootstrap_activateCaptivePortal(requestHandler)
   if(not bootstrap_captive_activated) then
     bootstrap_captive_activated = true;
 
-    print("CAPTIVE -- ACTIVATING CAPTIVE PORTAL");
+    __log("CAPTIVE -- ACTIVATING CAPTIVE PORTAL");
 
     --STARTING WIFI AP
-    print("CAPTIVE -- Starting Wifi AP");
+    __log("CAPTIVE -- Starting Wifi AP");
     wifi.setmode(wifi.STATIONAP);
 
     local _bootstrap_captive_ip;
@@ -38,97 +38,29 @@ function _bootstrap_activateCaptivePortal()
     wifi.ap.dhcp.config(dhcp_config);
     wifi.ap.dhcp.start();
 
-
-
     --STARTING REST APIS
-    print("CAPTIVE -- Starting REST APIs");
+    __log("CAPTIVE -- Starting REST APIs");
 
     srv = net.createServer(net.TCP);
     srv:listen(80,function(conn)
       conn:on("receive", function(client,request)
-          local buf = "";
           local _, _, method, path, vars = string.find(request, "([A-Z]+) (.+)?(.+) HTTP");
           if(method == nil) then
               _, _, method, path = string.find(request, "([A-Z]+) (.+) HTTP");
           end
-          local showIndex = true;
-          local _GET = {};
+          local params = {};
           if (vars ~= nil) then
               for k, v in string.gmatch(vars, "(%w+)=(%w+)&*") do
-                  _GET[k] = v;
-                  showIndex = false;
+                  params[k] = v;
               end
           end
 
-          --LOGIN PAGE
-          if(showIndex) then
-             print("Showing ssid/password page");
-             buf = buf.."<html><head><title>" .. _bootstrap_config.wifi_captive_browser_title .. "</title></head>";
-             buf = buf.."<body>";
-             buf = buf.."<h2>" .. _bootstrap_config.wifi_captive_title .. "</h2>";
-             buf = buf.."<div>" .. _bootstrap_config.wifi_captive_message .. "</div>";
-             buf = buf.."<form action=\"/\" method=\"get\">";
-             buf = buf.."<input type=\"hidden\" name=\"action\" value=\"login\" />";
-             buf = buf.."<p>Rede Wifi: <input type=\"text\" name=\"ssid\" /></p>";
-             buf = buf.."<p>Senha: <input type=\"text\" name=\"pass\" /></p>";
-             buf = buf.."<input type=\"submit\" value=\"Enviar\">";
-             buf = buf.."</form>";
-             buf = buf.."</body></html>";
-
-             startNetworkScan();
-
-          --PROCESS STATUS REQUEST
-          elseif(_GET.action == "status") then
-             print("Wifi status: " .. wifiStaStatusTxt);
-             if(wifi.sta.getip() ~= nil) then
-                print("station ip: " .. wifi.sta.getip());
-                buf = buf.."{'status':'" .. wifiStaStatus .. "','message':'" .. wifiStaStatusTxt .. "','ip':'" .. wifi.sta.getip() .. "'}";
-             else
-                print("Could not get ip");
-                buf = buf.."{'status':'" .. wifiStaStatus .. "','message':'" .. wifiStaStatusTxt .. "'}";
-             end
-    --           if(_GET.login == "ON1")then
-    --                 gpio.write(led1, gpio.HIGH);
-    --           end
-
-          --PROCESS START NETWORKS SCAN
-          elseif(_GET.action == "scan") then
-             print("START NETWORK SCAN");
-             startNetworkScan();
-             buf = buf .. "{'result':'OK','message':'Scan started. Call action *list* to get results'}";
-
-          --PROCESS GET NETWORKS REQUEST
-          elseif(_GET.action == "list") then
-             print("GET SCAN RESULTS");
-             buf = buf .. networksJson;
-
-          --PROCESS SSID/PASSWORD
-          elseif(_GET.action == "login") then
-             wifi.sta.eventMonStart()
-             print("Processing ssid/password");
-             if(_GET.ssid ~= nil and _GET.pass ~=nil) then
-                print("SSID: " .. _GET.ssid);
-                print("PASS: " .. _GET.pass);
-                wifi.sta.config(_GET.ssid,_GET.pass,1);--auto reconnect
-                local status, err = pcall(wifi.sta.connect);
-                if(status) then
-                   buf = buf.."{'result':'OK','message':'SSID and PASSWORD processed'}";
-                else
-                   print("Exception while calling wifi.sta.connect(). err=" .. err);
-                   buf = buf.."{'result':'ERROR','message':'" .. err .. "'}";
-                end
-             else
-                buf = buf.."{'result':'ERROR','message':'Both \'ssid\' and \'pass\' parameters must be set'}";
-             end
-
-          else
-             buf = buf.."{'result':'ERROR','message':'Invalid action'}";
-
-          end
-
-          client:send(buf);
-          client:close();
-          collectgarbage();
+          requestHandler(path, params, function(httpCode, responseBody)
+            client:send("HTTP/1.0 " .. httpStatus .. "\r\nContent-Type: " .. contentType .. "\r\nCache-Control: private, no-store\r\n\r\n");
+            client:send(responseBody);
+            client:close();
+            collectgarbage();
+          end)
        end)
     end)
 
@@ -160,15 +92,97 @@ function _bootstrap_activateCaptivePortal()
        wifiStaStatusTxt = "Got IP";
        wifiStaStatus = "" .. wifi.STA_GOTIP;
        wifi.sta.eventMonStop();
-       print("Connected to AP successfuly");
+       __log("Connected to AP successfuly");
     end)
   else
-    print("Captive portal already activated. Won't activate it again.");
+    __log("Captive portal already activated. Won't activate it again.");
   end
 end
 
+
+
+function _bootstrap_wifiLoginRequestHandler(path, params, callback)
+  local buf = "";
+  local mimeType = "application/json";
+  local httpStatus = "200 OK";
+
+  --LOGIN PAGE
+  if(path == "" or path == "/") then
+     __log("Showing ssid/password page");
+     buf = buf.."<html><head><title>" .. _bootstrap_config.wifi_captive_browser_title .. "</title></head>";
+     buf = buf.."<body>";
+     buf = buf.."<h2>" .. _bootstrap_config.wifi_captive_title .. "</h2>";
+     buf = buf.."<div>" .. _bootstrap_config.wifi_captive_message .. "</div>";
+     buf = buf.."<form action=\"/\" method=\"get\">";
+     buf = buf.."<input type=\"hidden\" name=\"action\" value=\"login\" />";
+     buf = buf.."<p>Rede Wifi: <input type=\"text\" name=\"ssid\" /></p>";
+     buf = buf.."<p>Senha: <input type=\"text\" name=\"pass\" /></p>";
+     buf = buf.."<input type=\"submit\" value=\"Enviar\">";
+     buf = buf.."</form>";
+     buf = buf.."</body></html>";
+     mimeType = "text/html";
+
+     startNetworkScan();
+
+  --PROCESS STATUS REQUEST
+  elseif(params.action == "status") then
+     __log("Wifi status: " .. wifiStaStatusTxt);
+     if(wifi.sta.getip() ~= nil) then
+        __log("station ip: " .. wifi.sta.getip());
+        buf = buf.."{'status':'" .. wifiStaStatus .. "','message':'" .. wifiStaStatusTxt .. "','ip':'" .. wifi.sta.getip() .. "'}";
+     else
+        __log("Could not get ip");
+        buf = buf.."{'status':'" .. wifiStaStatus .. "','message':'" .. wifiStaStatusTxt .. "'}";
+     end
+--           if(_GET.login == "ON1")then
+--                 gpio.write(led1, gpio.HIGH);
+--           end
+
+  --PROCESS START NETWORKS SCAN
+  elseif(params.action == "scan") then
+     __log("START NETWORK SCAN");
+     startNetworkScan();
+     buf = buf .. "{'result':'OK','message':'Scan started. Call action *list* to get results'}";
+
+  --PROCESS GET NETWORKS REQUEST
+  elseif(params.action == "list") then
+     __log("GET SCAN RESULTS");
+     buf = buf .. networksJson;
+
+  --PROCESS SSID/PASSWORD
+  elseif(params.action == "login") then
+     wifi.sta.eventMonStart()
+     __log("Processing ssid/password");
+     if(params.ssid ~= nil and params.pass ~=nil) then
+        __log("SSID: " .. params.ssid);
+        __log("PASS: " .. params.pass);
+        wifi.sta.config(params.ssid,params.pass,1);--auto reconnect
+        local status, err = pcall(wifi.sta.connect);
+        if(status) then
+           buf = buf.."{'result':'OK','message':'SSID and PASSWORD processed'}";
+           client:send(buf);
+           client:close();
+           bootstrap_resetWatchDog();
+           __log("!!!! APP_UPDATE - Restarting unit to activate configuration !!!!");
+           node.reboot();
+        else
+           __log("Exception while calling wifi.sta.connect(). err=" .. err);
+           buf = buf.."{'result':'ERROR','message':'" .. err .. "'}";
+        end
+     else
+        buf = buf.."{'result':'ERROR','message':'Both \'ssid\' and \'pass\' parameters must be set'}";
+     end
+
+  else
+     buf = buf.."{'result':'ERROR','message':'Invalid action'}";
+     httpStatus = "400 Bad Request";
+  end
+
+  callback(httpStatus, mimeType, buf);
+end
+
 function startNetworkScan()
-   print("Scan available wifi networks");
+   __log("Scan available wifi networks");
    networksJson = "{'networks':[";
    function listap(t)
      for k,v in pairs(t) do

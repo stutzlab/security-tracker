@@ -1,15 +1,9 @@
-print("WATCHDOG -- Checking watchdog counter...");
+__log("WATCHDOG -- Checking watchdog counter...");
 
 global WATCHDOG_FILE_COUNTER = "bootstrap_watchdog.counter";
 
 local watchdogCounter = bootstrap_getWatchDogCounter();
-print("WATCHDOG -- Watchdog counter = " .. watchdogCounter);
-
-if(watchdogCounter > 3) then
-  print("WATCHDOG -- DETECTED FAULT. ACTIVATING CAPTIVE PORTAL. COUNTER = " .. watchdogCounter);
-  bootstrap_activateCaptivePortal();
-end
-
+__log("WATCHDOG -- Watchdog counter = " .. watchdogCounter);
 
 function _bootstrap_resetWatchDogCounter() then
   file.open(WATCHDOG_FILE_COUNTER, "w+");
@@ -25,11 +19,15 @@ function _bootstrap_incrementWatchDogCounter() then
   file.close();
 end
 
+function _bootstrap_isWatchDogTriggered(counter)
+  return bootstrap_getWatchDogCounter() > counter;
+end
+
 function bootstrap_getWatchDogCounter() then
   local f = file.open(WATCHDOG_FILE_COUNTER, "r");
   if(not f) then
     file.close();
-    print("WATCHDOG -- Creating '" .. WATCHDOG_FILE_COUNTER .. "' with '0'");
+    __log("WATCHDOG -- Creating '" .. WATCHDOG_FILE_COUNTER .. "' with '0'");
     _bootstrap_resetWatchDogCounter();
     f = file.open(WATCHDOG_FILE_COUNTER, "r");
   end
