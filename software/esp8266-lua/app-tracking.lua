@@ -1,5 +1,3 @@
---TIMERS: 0 - tracker
---        1 - uploader
 
 global APP_FILE_CONFIG = "app_config";
 global APP_FILE_NMEA_PREFIX = "app_nmea-";
@@ -13,7 +11,7 @@ global _app_skipRecordsWhenStopped = 0;
 global _app_skippedRecordCountWhenStopped = 0;
 
 --adjust according to available ram memmory
-global NMEA_MAX_MEMORY_SAMPLES = 20;
+global NMEA_MAX_MEMORY_SAMPLES = 10;
 global _app_nmeaMemSamples = {};
 
 global _app_nmeaSampleCount = 0;
@@ -36,10 +34,27 @@ function init()
       end
     end
   end
+  _app_nmeaFileCount = _app_nmeaFileCount + 1;
   __log("APP_TRACKING -- filecounter = " .. _app_nmeaFileCount);
+
 
   --load app config from disk
   _app_config = _app_loadConfigFromDisk();
+
+
+  --get app config from server
+
+  __log("APP_TRACKING -- Getting configuration from server. app_uid=" .. registration.app_uid);
+  http.get(APP_URL_APPS .. "/" .. registration.app_uid .. "/config", nil, function(code, data)
+    if (code == 200) then
+      __log("APP_TRACKING -- App config downloaded. config=" .. data);
+      local appConfig = cjson.decode(data);
+
+    else
+      __log("APP_REGISTRATION -- Error getting app config. code=" .. code .. "; response=" .. data);
+    end
+  end)
+
 end
 
 
@@ -65,6 +80,7 @@ function _app_startTracking()
     local nmea = _app_stringSplit(_app_lastGPSSampleRMC, ",");
     local speedKnots = _app_stringSplit(nmea[8], ".")[1];
     local stoppedMode = (speedKnots <= 2);
+
     if(stoppedMode) then -- speed <= 2 knots
       __log("APP_TRACKING -- Device is stopped. Record frequency is reduced. recordIntervalMillis=" .. NMEA_RECORD_INTERVAL_MILLIS_WHEN_STOPPED .. "; speedKnots=" .. speedKnots);
       if(_app_skippedRecordCountWhenStopped < _app_skipRecordsWhenStopped) then
@@ -114,7 +130,7 @@ function _app_flushSamplesToDisk(nmeaSamples)
   local filename = _app_getNmeaFilename();
   local fo = file.open(filename, "a+");
   if(fo) then
-    __log("APP_TRACKING -- Will record nmea memory samples to disk now. filename=" .. filename .. "; numberSamples=" .. #nmeaSamples);
+    __log("APP_TRACKING -- Opened file for flushing memory samples to disk. filename=" .. filename .. "; numberSamples=" .. #nmeaSamples);
     for i=1, #nmeaSamples do
       --TODO write or writeLine?
       file.write(nmeaSamples[i]);
@@ -164,6 +180,10 @@ function _app_loadConfigFromDisk()
   file.close();
 
   return _app_config;
+end
+
+function _app_getCurrentNmeaFilename()
+  return _app_currentNmeaFilename;
 end
 
 init();

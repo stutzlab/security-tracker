@@ -1,12 +1,25 @@
---TODOOOO!
 
-__log("APP_TRACKING -- Getting configuration from server. app_uid=" .. registration.app_uid);
-http.get(APP_URL_APPS .. "/" .. registration.app_uid .. "/config", nil, function(code, data)
-  if (code == 200) then
-    __log("APP_TRACKING -- App config downloaded. config=" .. data);
-    local appConfig = cjson.decode(data);
+global internetAccessible = false;
 
-  else
-    __log("APP_REGISTRATION -- Error getting app config. code=" .. code .. "; response=" .. data);
-  end
+__log("APP_CONNECTIVITY -- Starting to monitor internet connectivity");
+tmr.register(1, 2000, tmr.ALARM_AUTO, function()
+  local conn = net.createConnection(net.TCP, _app_info_remote.contents-ssl);
+  conn:connect(_app_info_remote.contents-port, _app_info_remote.contents-host);
+  conn:on("connection", function(sck, c)
+    sck.close();
+    tmr.unregister(2);
+    if(not internetAccessible) then
+      internetAccessible = true;
+      events.publishEvent("internet-connectivity", true);
+    end
+  end)
+  --register timeout
+  tmr.register(2, 1800, tmr.ALARM_SINGLE, function()
+    if(internetAccessible) then
+      internetAccessible = false;
+      events.publishEvent("internet-connectivity", false);
+    end
+  end)
+  tmr.start(2);
 end)
+tmr.start(1);

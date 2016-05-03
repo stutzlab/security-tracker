@@ -1,3 +1,9 @@
+--TIMERS: 0 - tracker sampler
+--        1 - connectivity loop
+--        2 - connectivity timeout
+
+global events = dofile("util-eventlistener.lua");
+
 dofile("app-utils.lua");
 dofile("app-registration.lua");
 dofile("app-tracking.lua");
