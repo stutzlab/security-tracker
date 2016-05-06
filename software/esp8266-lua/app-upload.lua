@@ -1,49 +1,138 @@
 
+--adjust according to ram memory availability
+global APP_UPLOAD_CHUNK_SIZE = 1024;
+
+global _app_uploadStatus = {
+  pendingFiles = 0,
+  pendingBytes = 0
+};
+
+__log("APP_REGISTRATION -- Registering upload timer loop");
+tmr.register(4, 5000, tmr.ALARM_AUTO,
+  lock("internet", function(callback)
+    _app_uploadDataToServer(callback);
+  end);
+end);
+
 events.registerListener("internet-connectivity", function(accessible)
   if(accessible) then
+    tmr.start(4);
+  else
+    tmr.stop(4);
+  end
+end);
 
-    __log("APP_UPLOAD -- Internet connectivity detected. Starting to send files");
+function _app_uploadDataToServer()
+  __log("APP_UPLOAD -- Internet connectivity detected. Starting to send files");
 
-    --sort nmea file names
-    local fnames = {}
-    for n in pairs(fc) do
-      if(strsub(k,1,strlen(APP_FILE_NMEA_PREFIX)) == APP_FILE_NMEA_PREFIX) then
-        table.insert(fnames, n);
-      end
-    end
-    table.sort(fnames);
-
-    --send older files first
-    for i,filename in ipairs(fnames) do
-
-      if(filename ~= _app_getCurrentNmeaFilename()) then
-        local fo = file.open(filename, "r");
-        filecontents = file.read();
-        if(fo) then
-          __log("APP_UPLOAD -- Opened file " .. fn .. ". Starting to send it.");
-          --FIXME REIMPLEMENT THIS USING RAW SOCKETS BECAUSE DATA HAS TO BE SENT USING SMALL BUFFERS (files dont fit on ram memory)
-          parei aqui
-          --TODO test if default http module timeout (10s) is a bad thing
-          http.post(APP_URL_APPS .. "/" .. registration.app_uid .. "/nmea_files",
-            "Content-Type: text/csv\r\n",
-            fileContents,
-            function(code, data)
-              if (code == 201) then
-                __log("APP_UPLOAD -- File sent successfuly");
-                if(file.remove(filename)) then
-                  __log("APP_UPLOAD -- Local file removed. filename=" .. filename);
-                else
-                  __log("APP_UPLOAD -- Local file could not be removed. filename=" .. filename);
-                end
-              else
-                __log("APP_UPLOAD -- File failed to be sent. code=" .. code .. "; data=" .. data);
-              end
-          end)
-        else
-          __log("APP_UPLOAD -- Could not open file " .. fn .. " to send to server.");
-        end
-      end
-
+  --sort nmea file names
+  local fc = file.list();
+  global fnames = {}
+  local fsizes = {}
+  local totalUploadPendingSize = 0;
+  for n,s in pairs(fc) do
+    if(strsub(k,1,strlen(APP_FILE_NMEA_PREFIX)) == APP_FILE_NMEA_PREFIX) then
+      table.insert(fnames, n);
+      table.insert(fsizes, s);
+      totalUploadPendingSize = totalUploadPendingSize + s;
     end
   end
+  table.sort(fnames);
+
+  __log("APP_UPLOAD -- Total upload pending: nr files=".. #fnames .."; bytes=" .. totalUploadPendingSize);
+  _app_uploadStatus.pendingBytes = totalUploadPendingSize;
+  _app_uploadStatus.pendingFiles = #fnames;
+
+  --send older files first
+  _app_uploadFiles(fnames, 1);
+
+end
+
+function _app_uploadFiles(fnames, i)
+  if(i > #fnames) then
+    __log("APP_UPLOAD -- No pending files found");
+    return;
+  end
+
+  local filename = fnames[i];
+  if(filename ~= _app_getCurrentNmeaFilename()) then
+    local fileHash = crypto.toHex(crypto.fhash("sha1", filename));
+    local fo = file.open(filename, "r");
+    if(fo) then
+
+      __log("APP_UPLOAD -- Opened file " .. fn);
+      local lastFilePosition = 0;
+      global uploadSize = fsizes[i];
+      local responseData = "";
+
+      local conn = net.createConnection(net.TCP, _app_info_remote.contents-ssl);
+
+      conn:on("connection", function(sck, c)
+        __log("APP_UPLOAD -- Sending POST to server with file contents. filename=" .. filename .. "; size=" .. uploadSize);
+        local post = "POST " .. APP_URL_APPS .. "/" .. registration.app_uid .. "/nmea_files" .. " HTTP/1.0\r\n";
+        post = post .. "User-Agent: ".. bootstrap_getConfig().device-name .. "\r\n";
+        post = post .. "Content-Type: text/csv\r\n";
+        post = post .. "X-Content-Hash: " .. fileHash .. "\r\n";
+        post = post .. "X-Internal-Filename: " .. filename .. "\r\n";
+        post = post .. "Content-Length: " .. uploadSize .. "\r\n\r\n";
+        responseData = "";
+        sck:send(post);
+      end)
+
+      conn:on("sent", function(sck)
+        __log("APP_UPLOAD -- 'sent' event");
+        if(uploadSize > lastFilePosition) then
+          __log("APP_UPLOAD -- Reading next file chunk from disk. position=" .. lastFilePosition);
+          file.seek("set", lastFilePosition);
+          __log("APP_UPLOAD -- Reading chunk data from disk");
+          local data = file.read(APP_UPLOAD_CHUNK_SIZE);
+          __log("APP_UPLOAD -- Read " .. strlen(data) .. " bytes from disk");
+          lastFilePosition = lastFilePosition + strlen(data);
+          __log("APP_UPLOAD -- Sending file chunk to server. length=" .. strlen(data));
+          sck:send(data);
+        else
+          __log("APP_UPLOAD -- File data uploaded. Closing connection. filename=" .. filename);
+          file.close();
+          sck:close();
+        end
+      end)
+
+      conn:on("disconnection", function(sck)
+        __log("APP_UPLOAD -- File upload connection closed");
+        file.close();
+      end)
+
+      conn:on("receive", function(sck, c)
+        responseData = responseData .. c;
+        if(c == "\r") then
+          __log("APP_UPLOAD -- Response line received. responseData=" .. responseData);
+          response = _app_stringSplit(responseData, " ");
+          if(reponse[2] == 201) then
+            __log("APP_UPLOAD -- File accepted by server. response=" .. responseData);
+            _app_uploadStatus.pendingBytes = _app_uploadStatus.pendingBytes - uploadSize;
+            _app_uploadStatus.pendingFiles = _app_uploadStatus.pendingFiles - 1;
+            file.remove(filename);
+            __log("APP_UPLOAD -- File removed from local filesystem. filename=" .. filename);
+            _app_uploadFiles(fnames, i+1);
+          else
+            __log("APP_UPLOAD -- File rejected by server. response=" .. responseData);
+          end
+          sck:close();
+        end
+      end)
+
+      conn:connect(_app_info_remote.contents-port, _app_info_remote.contents-host);
+
+    else
+      __log("APP_UPLOAD -- Could not open file " .. fn .. " to send to server.");
+    end
+
+  else
+    __log("APP_UPLOAD -- Skipping uploading nmea file because it is being used for writing. filename=" .. filename);
+  end
+
 end)
+
+function _app_getUploadStatus()
+  return _app_uploadStatus;
+end

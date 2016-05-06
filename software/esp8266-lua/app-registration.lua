@@ -3,9 +3,24 @@ __log("APP_REGISTRATION -- Checking App registration...");
 global APP_FILE_REGISTRATION = "app_registration";
 global APP_URL_APPS = "http://tracker.stutzthings.com/tracker/devices/apps";
 
+global registrationCounter = 0;
 global _app_registration = nil;
 
---callback(registrationInfo)
+__log("APP_REGISTRATION -- Registering registration timer loop");
+tmr.register(3, 5000, tmr.ALARM_AUTO,
+  lock("internet", function(callback)
+    _app_checkAppRegistration(callback);
+  end);
+end);
+
+events.registerListener("internet-connectivity", function(accessible)
+  if(accessible) then
+    tmr.start(3);
+  else
+    tmr.stop(3);
+  end
+end);
+
 function _app_checkAppRegistration(callback)
 
   __log("APP_REGISTRATION -- Verifying App registration");
@@ -20,7 +35,8 @@ function _app_checkAppRegistration(callback)
       if (code == 404) then
         __log("APP_REGISTRATION -- app_uid not found. app_uid=" .. registration.app_uid);
         _app_startAppRegistration();
-        callback(nil);
+        _app_registration = nil;
+        callback();
 
       elseif (code == 200) then
         __log("APP_REGISTRATION -- app_uid found. response=" .. registrationResponse);
@@ -28,23 +44,51 @@ function _app_checkAppRegistration(callback)
 
         if(registrationResponse.status == "active" and registrationResponse.account_id) then
           __log("APP_REGISTRATION -- App registration is VALID");
-          callback(registration);
+          _app_registration = registration;
         else
           __log("APP_REGISTRATION -- App registration is INVALID");
           _app_startAppRegistration();
-          callback(nil);
+          _app_registration = nil;
         end
 
+        __log("APP_UPLOAD -- Sending app status to server");
+        local uploadStatus = _app_getUploadStatus();
+        local remaining, used, total = file.fsinfo();
+        local appStatus = {
+          node_bootreason = node.bootreason(),
+          node_heap = node.heap(),
+          bootstrap_watchdogcounter = bootstrap_getWatchDogCounter(),
+          bootstrap_captiveportal_active = bootstrap_isCaptivePortalActive(),
+          fsinfo_remaining = remaining,
+          fsinfo_used = used,
+          fsinfo_total = total,
+          upload_pendingFiles = uploadStatus.pendingFiles,
+          upload_pendingBytes = uploadStatus.pendingBytes
+        };
+        http.put(APP_URL_APPS .. "/" .. registration.app_uid .. "/status",
+          "Content-Type: application/json\r\n",
+          cjson.encode(appStatus), function(code, data)
+            if (code == 200) then
+              __log("APP_UPLOAD -- App status POST successful.");
+            else
+              __log("APP_UPLOAD -- App status POST failed. code=" .. code);
+            end
+            callback();
+        end);
+
       else
-        __log("APP_REGISTRATION -- Error getting app_uid info. code=" .. code .. "; response=" .. registrationResponse);
-        callback(registration);
+        __log("APP_REGISTRATION -- Error getting app_uid info. Trusting configuration data from disk without verifying on cloud. code=" .. code .. "; response=" .. registrationResponse);
+        _app_registration = registration;
+        callback();
       end
+
     end);
 
   else
     __log("APP-REGISTRATION -- Registration file not found");
     _app_startAppRegistration();
-    callback(nil);
+    _app_registration = nil;
+    callback();
   end
 
 end
@@ -73,7 +117,7 @@ function _app_appRegistrationRequestHandler(path, params, responseCallback)
       --register new app instance
       http.post(APP_URL_APPS,
         "Content-Type: application/json\r\n",
-        cjson.encode({account_id=params.username, account_password=params.password}),
+        cjson.encode({account_id=params.username, account_password=params.password, hw_id=node.chipid()}),
         function(code, data)
           if (code == 201) then
 
@@ -130,5 +174,8 @@ function _app_appRegistrationRequestHandler(path, params, responseCallback)
   end
 
   responseCallback(httpStatus, mimeType, buf);
+end
 
+function _app_getRegistration()
+  return _app_registration;
 end

@@ -1,6 +1,7 @@
 __log("APP_UPDATE -- Performing app update...");
 
 global BOOTSTRAP_FILE_APP_CONTENTS_TEMP = "app.lua.downloaded";
+global _app_info_local = nil;
 
 --global bootstrap_app_info = {
 --  name = "undefined",
@@ -13,6 +14,10 @@ global BOOTSTRAP_FILE_APP_CONTENTS_TEMP = "app.lua.downloaded";
 --  contents-size = 72434,
 --  sanity = "OK"
 --};
+
+function _bootstrap_getAppInfo()
+  return _app_info_local;
+end;
 
 function _bootstrap_checkForUpdates()
   __log("APP_UPDATE -- Initiating App update process...");
@@ -34,7 +39,7 @@ function _bootstrap_checkForUpdates()
           and _app_info_remote.version ~= nil and _app_info_remote.hash ~= nil) then
           __log("APP_UPDATE -- App info sanity check OK");
 
-          local _app_info_local = _utils_getAppInfoFromFile();
+          _app_info_local = _bootstrap_getAppInfoFromFile();
 
           --Verify if local file info contents matches remote (no need to update app)
           local downloadNewApp = false;
@@ -74,7 +79,6 @@ function _bootstrap_checkForUpdates()
             --directly to the disk. http module would put all data in memory, causing
             --out-of-memory exceptions for Apps larger than available memory
             local conn = net.createConnection(net.TCP, _app_info_remote.contents-ssl);
-
             conn:on("receive", function(sck, c)
               file.write(c);
               //FIXME: skip http header. verify available storage
@@ -113,11 +117,12 @@ function _bootstrap_checkForUpdates()
 
             end);
 
-            conn:connect(_app_info_remote.contents-port, _app_info_remote.contents-host);
             conn:on("connection", function(sck, c)
               -- Wait for connection before sending.
-              sck:send("GET / HTTP/1.1\r\nHost: " .. _app_info_remote.contents-host .. "\r\nConnection: keep-alive\r\nAccept: */*\r\n\r\n");
+              sck:send("GET ".. _app_info_remote.contents-path .." HTTP/1.1\r\nHost: " .. _app_info_remote.contents-host .. "\r\nConnection: keep-alive\r\nAccept: */*\r\n\r\n");
             end)
+
+            conn:connect(_app_info_remote.contents-port, _app_info_remote.contents-host);
           end
 
       else

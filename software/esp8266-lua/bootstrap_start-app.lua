@@ -12,7 +12,7 @@ function _bootstrap_startApp()
   if(fc and fi) then
     __log("START_APP -- App files found");
 
-    local _app_info = _utils_getAppInfoFromFile();
+    local _app_info = _bootstrap_getAppInfoFromFile();
 
     __log("START_APP -- Checking app integrity...");
     local fh = crypto.toHex(crypto.fhash("sha1", BOOTSTRAP_FILE_APP_CONTENTS));

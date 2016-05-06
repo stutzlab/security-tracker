@@ -6,8 +6,8 @@ networksJson = "{'status':'pending'}";
 
 --requestHandler(httpStatus, contentType, responseBody)
 function _bootstrap_activateCaptivePortal(requestHandler)
-  if(not bootstrap_captive_activated) then
-    bootstrap_captive_activated = true;
+  if(not _bootstrap_captive_activated) then
+    _bootstrap_captive_activated = true;
 
     __log("CAPTIVE -- ACTIVATING CAPTIVE PORTAL");
 

@@ -27,6 +27,17 @@ end
 
 
 -- PUBLIC FUNCTIONS (functions that can be invoked by apps)
+function bootstrap_getWatchDogCounter()
+  _bootstrap_getWatchDogCounter();
+end
+
+function bootstrap_getConfig()
+  return _bootstrap_config;
+end
+
+function bootstrap_getAppInfo()
+  return _bootstrap_getAppInfo();
+end
 
 function bootstrap_isConnectedToInternet(callback)
   _bootstrap_isConnectedToInternet(callback);

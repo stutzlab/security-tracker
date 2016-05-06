@@ -2,7 +2,7 @@ __log("WATCHDOG -- Checking watchdog counter...");
 
 global WATCHDOG_FILE_COUNTER = "bootstrap_watchdog.counter";
 
-local watchdogCounter = bootstrap_getWatchDogCounter();
+local watchdogCounter = _bootstrap_getWatchDogCounter();
 __log("WATCHDOG -- Watchdog counter = " .. watchdogCounter);
 
 function _bootstrap_resetWatchDogCounter() then
@@ -12,7 +12,7 @@ function _bootstrap_resetWatchDogCounter() then
 end
 
 function _bootstrap_incrementWatchDogCounter() then
-  local counter = bootstrap_getWatchDogCounter();
+  local counter = _bootstrap_getWatchDogCounter();
   file.open(WATCHDOG_FILE_COUNTER, "w+");
   counter = counter + 1;
   file.write(counter);
@@ -20,10 +20,10 @@ function _bootstrap_incrementWatchDogCounter() then
 end
 
 function _bootstrap_isWatchDogTriggered(counter)
-  return bootstrap_getWatchDogCounter() > counter;
+  return _bootstrap_getWatchDogCounter() > counter;
 end
 
-function bootstrap_getWatchDogCounter() then
+function _bootstrap_getWatchDogCounter() then
   local f = file.open(WATCHDOG_FILE_COUNTER, "r");
   if(not f) then
     file.close();

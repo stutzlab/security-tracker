@@ -18,7 +18,6 @@ global _app_nmeaSampleCount = 0;
 global _app_nmeaFileCount = 0;
 global _app_currentNmeaFilename = nil;
 
-global _app_config;
 global _app_lastGPSSampleGGA;
 global _app_lastGPSSampleRMC;
 global _app_recordGGA = true;
@@ -36,24 +35,6 @@ function init()
   end
   _app_nmeaFileCount = _app_nmeaFileCount + 1;
   __log("APP_TRACKING -- filecounter = " .. _app_nmeaFileCount);
-
-
-  --load app config from disk
-  _app_config = _app_loadConfigFromDisk();
-
-
-  --get app config from server
-
-  __log("APP_TRACKING -- Getting configuration from server. app_uid=" .. registration.app_uid);
-  http.get(APP_URL_APPS .. "/" .. registration.app_uid .. "/config", nil, function(code, data)
-    if (code == 200) then
-      __log("APP_TRACKING -- App config downloaded. config=" .. data);
-      local appConfig = cjson.decode(data);
-
-    else
-      __log("APP_REGISTRATION -- Error getting app config. code=" .. code .. "; response=" .. data);
-    end
-  end)
 
 end
 
@@ -122,7 +103,7 @@ end
 
 function _app_flushSamplesToDisk(nmeaSamples)
   --TODO Verify if there will be a problem during removal while an open file for writing exists
-  if(_app_freeupStorage()) then
+  if(freeupStorage()) then
     __log("APP_TRACKING -- Starting captive portal because storage is low (seems like there is no internet connection for flushing files to the cloud for a long time)");
     bootstrap_forceCaptivePortalWifi();
   end
@@ -164,22 +145,6 @@ end
 function _app_stopTracking()
   tmr.unregister(0);
   file.close();
-end
-
-function _app_loadConfigFromDisk()
-  local fo = file.open(APP_FILE_CONFIG, "r");
-  if(fo) then
-    __log("APP_TRACKING -- Opened config file successfuly");
-    _app_config = cjson.decode(file.read());
-  else
-    __log("APP_TRACKING -- Failed to open App config file. Using defaults");
-    _app_config = {
-      samples-per-minute = 60;
-    };
-  end
-  file.close();
-
-  return _app_config;
 end
 
 function _app_getCurrentNmeaFilename()
