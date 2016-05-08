@@ -1,7 +1,10 @@
 --heap 14216
+log.log("captive module started loading. heap=" .. node.heap());
+
 if(log == nil) then
     log = dofile("util-log.lua");
 end
+
 
 local captive = {};
 
@@ -239,5 +242,6 @@ function captive.isConnectedToInternet(isSsl, host, port, callback)
   socket:connect(port, host);
 end
 
+log.log("captive module loaded. heap=" .. node.heap());
 
 return captive;

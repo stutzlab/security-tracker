@@ -1,18 +1,17 @@
---heap 4500
-dofile("bootstrap_modules.lua");
+dofile("bootstrap_log.lua");
 
 local startapp = {};
 
-local startapp.utils = dofile("bootstrap_utils.lua");--3000
-local startapp.watchdog = dofile("util-watchdog.lua");--5800
+local utils = dofile("bootstrap_utils.lua");--3000
+local watchdog = dofile("util-watchdog.lua");--5800
 
 --callback - app-file-error", "app-startup-success", "app-startup-error"
 function startapp.startApp(callback)
 
   _b_log.log("START_APP -- Starting App...");
 
-  local fileAppContents = startapp.utils.BOOTSTRAP_FILE_APP_CONTENTS;
-  local fileAppInfo = startapp.utils.BOOTSTRAP_FILE_APP_INFO;
+  local fileAppContents = utils.BOOTSTRAP_FILE_APP_CONTENTS;
+  local fileAppInfo = utils.BOOTSTRAP_FILE_APP_INFO;
 
   local fc = file.open(fileAppContents, "r");
   file.close();
@@ -22,7 +21,7 @@ function startapp.startApp(callback)
   if(fc and fi) then
     _b_log.log("START_APP -- App files found");
 
-    local _app_info = startapp.utils.getAppInfoFromFile();
+    local _app_info = utils.getAppInfoFromFile();
 
     _b_log.log("START_APP -- Checking app integrity...");
     local fh = crypto.toHex(crypto.fhash("sha1", fileAppContents));
@@ -42,25 +41,25 @@ function startapp.startApp(callback)
       _b_log.log("===========================================");
       _b_log.log("");
 
-      --free mem for loading App
+      --free mem before loading App
       startapp.utils = nil;--dealocate
       startapp.watchdog = nil;--dealocate
 
       --load App from file
-      _b_log.log("START_APP -- Loading App file...");
+      _b_log.log("START_APP -- Loading App file. heap=" .. node.heap());
       local status, app = pcall(dofile(fileAppContents));
       if(status) then
-        _b_log.log("START_APP -- App loaded SUCCESSFULLY");
+        _b_log.log("START_APP -- App loaded SUCCESSFULLY. heap=" .. node.heap());
         _app = app;
 
         -- startup App
         if(_app.startup ~= nil) then
           local status, err = pcall(_app.startup);
           if(status) then
-            _b_log.log("START_APP -- App startup() call was SUCCESSFUL");
+            _b_log.log("START_APP -- App startup() call was SUCCESSFUL. heap=" .. node.heap());
             callback("app-startup-success");
           else
-            _b_log.log("START_APP -- App startup() call was UNSUCCESSFUL. err=" .. err);
+            _b_log.log("START_APP -- App startup() call was UNSUCCESSFUL. heap=" .. node.heap() ..  "; err=" .. err);
             callback("app-startup-error");
           end
         else
@@ -69,7 +68,7 @@ function startapp.startApp(callback)
         end
 
       else
-        _b_log.log("START_APP -- Failed to load App file. err=" .. app);
+        _b_log.log("START_APP -- Failed to load App file. heap=" .. node.heap() .. "; err=" .. app);
         callback("app-file-error");
       end
 
@@ -87,3 +86,7 @@ function startapp.startApp(callback)
   startapp.watchdog = nil;--dealocate
 
 end
+
+_b_log.log("start-app module loaded. heap=" .. node.heap());
+
+return startapp;

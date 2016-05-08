@@ -1,9 +1,9 @@
 --heap 8800
-dofile("bootstrap_modules.lua");
+dofile("bootstrap_log.lua");
 
 local appupdate = {};
 
-local appupdate.BOOTSTRAP_FILE_APP_CONTENTS_TEMP = "app.lua.downloaded";
+local BOOTSTRAP_FILE_APP_CONTENTS_TEMP = "app.lua.downloaded";
 
 --global bootstrap_app_info = {
 --  name = "undefined",
@@ -71,7 +71,7 @@ function appupdate.checkForUpdates(config, utils, listener)
             _b_log.log("APP_UPDATE -- Downloading App contents and saving to disk...");
 
             --Download contents to a temp file
-            file.open(appupdate.BOOTSTRAP_FILE_APP_CONTENTS_TEMP, "w+");
+            file.open(BOOTSTRAP_FILE_APP_CONTENTS_TEMP, "w+");
 
             --Download file contents using raw TCP in order to stream the received bytes
             --directly to the disk. http module would put all data in memory, causing
@@ -129,5 +129,7 @@ function appupdate.checkForUpdates(config, utils, listener)
   end)
 
 end
+
+_b_log.log("app-update module loaded. heap=" .. node.heap());
 
 return appupdate;

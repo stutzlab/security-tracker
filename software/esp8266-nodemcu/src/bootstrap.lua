@@ -2,23 +2,30 @@ dofile("bootstrap_log.lua");--2100
 
 local b = {};
 
-local b.utils = dofile("bootstrap_utils.lua");--3000
-local b.config = dofile("bootstrap_config.lua");--1700
-local b.watchdog = dofile("util-watchdog.lua");--5800
-
-_b_log.log("===========================================");
-_b_log.log(">>>>> " .. _bootstrap_config.device-name .. " <<<<<");
-_b_log.log("App URL: " .. _bootstrap_config.app-update_info-url);
-_b_log.log("Boot reason: " .. node.bootreason());
-_b_log.log("===========================================");
-_b_log.log("");
-
+local utils = dofile("bootstrap_utils.lua");--3000
+local config = dofile("bootstrap_config.lua");--1700
+local watchdog = dofile("util-watchdog.lua");--5800
 
 function b.startup(callback)
 
-  if(b.watchdog.isTriggered(2)) then
-    _b_log.log("BOOTSTRAP -- Watchdog triggered. Activating captive portal. counter=" .. b.watchdog.getCounter());
-    local rebootLoopDetected = b.watchdog.isTriggered(20);
+  _b_log.log("");
+  _b_log.log("===========================================");
+  _b_log.log("**** Starting " .. config.device_name .. " ****");
+  _b_log.log("App URL: " .. config.app_info_url);
+  _b_log.log("Boot reason: " .. node.bootreason());
+  _b_log.log("===========================================");
+  _b_log.log("");
+
+  if(utils.getAppInfoFromFile() == nil) then
+      _b_log.log("BOOTSTRAP -- App file not found. Incrementing watchdog to force captive portal.");
+      watchdog.increment();
+      watchdog.increment();
+      watchdog.increment();
+  end
+
+  if(watchdog.isTriggered(2)) then
+    _b_log.log("BOOTSTRAP -- Watchdog triggered. Activating captive portal. counter=" .. watchdog.getCounter());
+    local rebootLoopDetected = watchdog.isTriggered(20);
 
     local captiveTimeout = 10000;
     if(rebootLoopDetected) then
@@ -26,28 +33,35 @@ function b.startup(callback)
       captiveTimeout = 0;
     end
 
-    local captive = dofile("util_captive.lua");--14216
+    _b_log.log("Preparing to load util-captive. heap=" .. node.heap());
+    parei aqui...
+    watchdog = nil;--dealocate
+    utils = nil;--dealocate
+    config = nil;--dealocate
+    
+    _b_log.log("About to load util-captive. heap=" .. node.heap());
+    local captive = dofile("util-captive.lua");--14216
     captive.start(captive.wifiLoginRequestHandler, captiveTimeout, function(event)
 
       if(event=="wifi_connect") then
-      elseif(event=="captive_timeout")
+      elseif(event=="captive_timeout") then
         _b_log.log("BOOTSTRAP -- Captive portal timeout");
         captive.stop();
         captive = nil;--dealocate
 
-        startApp(callback);
+        b.startApp(callback);
 
-      elseif(event=="internet_detected")
+      elseif(event=="internet_detected") then
         _b_log.log("BOOTSTRAP -- Internet connection detected");
         captive.stop();
         captive = nil;--dealocate
 
-        updateApp(callback);
+        b.updateApp(callback);
       end
     end);
 
   else
-    startApp(callback);
+    b.startApp(callback);
   end
 end
 
@@ -59,16 +73,16 @@ function b.updateApp(callback)
 
     if(result=="app-updated") then
       _b_log.log("BOOTSTRAP - Restarting unit to activate new app version");
-      b.watchdog.reset();
+      watchdog.reset();
       node.restart();
 
-    elseif(result=="app-update-error")
+    elseif(result=="app-update-error") then
       _b_log.log("BOOTSTRAP - Update error. Skipping.");
       b.startApp(callback);
 
-    elseif(result=="app-up-to-date")
+    elseif(result=="app-up-to-date") then
       _b_log.log("BOOTSTRAP - App is up-to-date");
-      b.watchdog.reset();
+      watchdog.reset();
       b.startApp(callback);
     end
 
@@ -78,3 +92,7 @@ end
 function b.startApp(callback)
   callback();
 end
+
+_b_log.log("bootstrap module loaded. heap=" .. node.heap());
+
+return b;

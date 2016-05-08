@@ -21,28 +21,11 @@ tmr.register(0, 1000, tmr.ALARM_SINGLE, function()
   uart.on("data");
 
   if(runBootstrap) then
-
-    print("Running bootstrap...");
-    local bootstrap = dofile("bootstrap.lua");
-
-    bootstrap.startup(function()
-      bootstrap = nil;--dealocate
-
-      print("Starting App...");
-      local startapp = dofile("bootstrap_start-app.lua");--4500
-      startApp(function(result)
-        startpapp = nil;--dealocate
-        print("App startup status: " .. result);
-      end);
-
-      if(_app.getInfo ~= nil) then
-        print("App info: " .. _app.getInfo());
-      end
-
-    end);
+    print("Launching bootstrap...");
+    --dofile("init-bootstrap.lua");
 
   else
-    print("Skipping bootstrap.");
+    print("Skipping bootstrap");
   end
 end)
 
@@ -51,13 +34,9 @@ tmr.start(0);
 
 -- PUBLIC FUNCTIONS (functions that can be invoked by apps)
 function resetWatchdog()
-  local watchdog = dofile("util-watchdog.lua");--5800
-  watchdog.reset();
-  watchdog = nil;--dealocate
+  dofile("util-watchdog.lua").reset();--5800
 end
 
 function incrementWatchdog()
-  local watchdog = dofile("util-watchdog.lua");--5800
-  watchdog.increment();
-  watchdog = nil;--dealocate
+  dofile("util-watchdog.lua").increment();--5800
 end

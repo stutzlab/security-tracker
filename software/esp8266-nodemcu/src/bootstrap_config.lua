@@ -1,5 +1,5 @@
 --heap 1700
-dofile("bootstrap_modules.lua");
+dofile("bootstrap_log.lua");
 
 _b_log.log("CONFIG -- Setup configuration...");
 

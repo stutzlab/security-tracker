@@ -51,4 +51,6 @@ end
 
 init();
 
+log.log("watchdog module loaded. heap=" .. node.heap());
+
 return watchdogutils;
