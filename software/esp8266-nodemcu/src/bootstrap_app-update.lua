@@ -1,9 +1,10 @@
 --heap 8800
 dofile("bootstrap_log.lua");
+local config = dofile("bootstrap_config.lua");
+
+local appContentsTemp = config.app_contents_file .. ".tmp"
 
 local appupdate = {};
-
-local BOOTSTRAP_FILE_APP_CONTENTS_TEMP = "app.lua.downloaded";
 
 --global bootstrap_app_info = {
 --  name = "undefined",
@@ -18,10 +19,10 @@ local BOOTSTRAP_FILE_APP_CONTENTS_TEMP = "app.lua.downloaded";
 --};
 
 --listener results: "app-update-error", "app-up-to-date", "app-updated"
-function appupdate.checkForUpdates(config, utils, listener)
+function appupdate.checkForUpdates(listener)
   _b_log.log("APP_UPDATE -- Initiating App update process...");
   _b_log.log("APP_UPDATE -- Trying to connect to Ronda.io server");
-  http.get(config.app-update_info-url, nil, function(code, data)
+  http.get(dofile("bootstrap_config.lua").app-update_info-url, nil, function(code, data)
     if (code < 0) then
       _b_log.log("APP_UPDATE -- Error during app info download. code=" .. code);
       if(not file.exists()) then
@@ -38,7 +39,7 @@ function appupdate.checkForUpdates(config, utils, listener)
           and _app_info_remote.version ~= nil and _app_info_remote.hash ~= nil) then
           _b_log.log("APP_UPDATE -- App info sanity check OK");
 
-          local _app_info_local = utils.getAppInfoFromFile();
+          local _app_info_local = dofile("bootstrap_utils.lua").getAppInfoFromFile();
 
           --Verify if local file info contents matches remote (no need to update app)
           local downloadNewApp = false;
@@ -65,13 +66,13 @@ function appupdate.checkForUpdates(config, utils, listener)
               _b_log.log("APP_UPDATE -- There is enough disk. Proceding with update...");
             else
               _b_log.log("APP_UPDATE -- Insufficient disk detected. Performing a factory reset to cleanup space...");
-              utils.performFactoryReset();
+              dofile("bootstrap_utils.lua").performFactoryReset();
             end
 
             _b_log.log("APP_UPDATE -- Downloading App contents and saving to disk...");
 
             --Download contents to a temp file
-            file.open(BOOTSTRAP_FILE_APP_CONTENTS_TEMP, "w+");
+            file.open(appContentsTemp, "w+");
 
             --Download file contents using raw TCP in order to stream the received bytes
             --directly to the disk. http module would put all data in memory, causing
@@ -85,22 +86,22 @@ function appupdate.checkForUpdates(config, utils, listener)
             conn:on("disconnection", function(sck, c)
               file.close();
               _b_log.log("APP_UPDATE -- Finished downloading new app contents to temp file. Checking it.");
-              local newFileHash = crypto.toHex(crypto.fhash(appupdate.BOOTSTRAP_FILE_APP_CONTENTS_TEMP));
+              local newFileHash = crypto.toHex(crypto.fhash(appContentsTemp));
 
               if(newFileHash == _app_info_remote.hash) then
                 _b_log.log("APP_UPDATE -- Downloaded file contents hash is OK");
 
                 _b_log.log("APP_UPDATE -- Removing current app info and app contents");
-                file.remove(utils.BOOTSTRAP_FILE_APP_INFO);
-                file.remove(utils.BOOTSTRAP_FILE_APP_CONTENTS);
+                file.remove(config.app_info_file);
+                file.remove(config.app_contents_file);
 
                 _b_log.log("APP_UPDATE - Replacing app info with new version");
-                file.open(utils.BOOTSTRAP_FILE_APP_INFO, "w+");
+                file.open(config.app_info_file, "w+");
                 file.write(cjson.encode(_app_info_remote));
                 file.close();
 
                 _b_log.log("APP_UPDATE - Replacing app contents with new version");
-                file.rename(appupdate.BOOTSTRAP_FILE_APP_CONTENTS_TEMP, utils.BOOTSTRAP_FILE_APP_CONTENTS);
+                file.rename(appContentsTemp, config.app_contents_file);
 
                 listener("app-updated");
 

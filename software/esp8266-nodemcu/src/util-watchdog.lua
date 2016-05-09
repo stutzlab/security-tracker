@@ -44,13 +44,6 @@ function watchdogutils.isTriggered(counter)
   return watchdogutils.getCounter() >= counter;
 end
 
-function init()
-  watchdogCounter = watchdogutils.getCounter();
-  log.log("WATCHDOG -- Watchdog counter = " .. watchdogCounter .. " - " .. fileCounter);
-end
-
-init();
-
 log.log("watchdog module loaded. heap=" .. node.heap());
 
 return watchdogutils;
