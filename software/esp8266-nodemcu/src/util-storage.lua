@@ -15,7 +15,7 @@ local storageutils = {};
 function storageutils.freeupStorage(minimumFreeBytes, freeupBytes, removeFileNamePrefix)
   local remaining, used, total = file.fsinfo();
   if(remaining < minimumFreeBytes) then
-    log.log("APP_UTILS -- Freeing up space on storage. available=" .. remaining .. "; minimum=" .. minimumFreeBytes .. "; freeupBytes=" .. freeupBytes .. "; removeFileNamePrefix=" .. removeFileNamePrefix);
+    log.log("app-UTILS -- Freeing up space on storage. available=" .. remaining .. "; minimum=" .. minimumFreeBytes .. "; freeupBytes=" .. freeupBytes .. "; removeFileNamePrefix=" .. removeFileNamePrefix);
 
     --sort nmea file names
     local fc = file.list();
@@ -38,7 +38,7 @@ function storageutils.freeupStorage(minimumFreeBytes, freeupBytes, removeFileNam
     end
 
     local remaining, used, total = file.fsinfo();
-    log.log("APP_UTILS -- Removed " .. deletions .. " files. available=" .. remaining .. "; used=" .. used .. "; total=" .. total);
+    log.log("app-UTILS -- Removed " .. deletions .. " files. available=" .. remaining .. "; used=" .. used .. "; total=" .. total);
     return true;
   else
     return false;

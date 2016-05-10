@@ -1,19 +1,16 @@
 --heap 3000
-dofile("bootstrap_log.lua");
+dofile("bootstrap-log.lua");
 
 local butils = {};
 
-butils.BOOTSTRAP_FILE_APP_CONTENTS = "app.lua";
-butils.BOOTSTRAP_FILE_APP_INFO = "app.info";
-
 function butils.getAppInfoFromFile()
-  local f = file.open(butils.BOOTSTRAP_FILE_APP_INFO, "r");
+  local f = file.open("app.info", "r");
   if(f) then
     local _contents = file.read();
     file.close();
     return cjson.decode(_contents);
   else
-    _b_log.log("UTILS -- File '" .. butils.BOOTSTRAP_FILE_APP_INFO .. "' not found");
+    _b_log.log("UTILS -- File 'app.info' not found");
     return nil;
   end
 end
@@ -31,6 +28,6 @@ function butils.performFactoryReset(watchdog)
   _b_log.log("UTILS -- Factory reset done. All non bootstrap files were removed (including App package and data).");
 end
 
-_b_log.log("bootstrap_utils module loaded. heap=" .. node.heap());
+_b_log.log("bootstrap-utils module loaded. heap=" .. node.heap());
 
 return butils;

@@ -1,30 +1,30 @@
-dofile("bootstrap_log.lua");
+dofile("bootstrap-log.lua");
 
 local startapp = {};
 
---local utils = dofile("bootstrap_utils.lua");--3000
+--local utils = dofile("bootstrap-utils.lua");--3000
 local watchdog = dofile("util-watchdog.lua");--5800
-local config = dofile("bootstrap_config.lua");
+local config = dofile("bootstrap-config.lua");
 
 --callback - app-file-error", "app-startup-success", "app-startup-error"
 function startapp.startApp(callback)
 
   _b_log.log("START_APP -- Starting App...");
 
-  local fc = file.open(config.app_contents_file, "r");
+  local fc = file.open(config.app-contents_file, "r");
   file.close();
-  local fi = file.open(config.app_info_file, "r");
+  local fi = file.open(config.app-info_file, "r");
   file.close();
 
   if(fc and fi) then
     _b_log.log("START_APP -- App files found");
 
-    local _app_info = dofile("bootstrap_utils.lua").getAppInfoFromFile();
+    local info = dofile("bootstrap-utils.lua").getAppInfoFromFile();
 
     _b_log.log("START_APP -- Checking app integrity...");
-    local fh = crypto.toHex(crypto.fhash("sha1", config.app_contents_file));
+    local fh = crypto.toHex(crypto.fhash("sha1", config.app-contents_file));
 
-    if(fh == _app_info.hash) then
+    if(fh == info.hash) then
       _b_log.log("START_APP -- App file hash matches app info. hash=" .. fh);
 
       _b_log.log("START_APP -- Incrementing watchdog counter");
@@ -32,10 +32,10 @@ function startapp.startApp(callback)
 
       _b_log.log("START_APP --");
       _b_log.log("===========================================");
-      _b_log.log("  STARTING APP '" .. _app_info.name .. "'...");
-      _b_log.log("      version = " .. _app_info.version);
-      _b_log.log("         file = " .. config.app_contents_file);
-      _b_log.log("         hash = " .. _app_info.hash);
+      _b_log.log("  STARTING APP '" .. info.name .. "'...");
+      _b_log.log("      version = " .. info.version);
+      _b_log.log("         file = " .. config.app-contents_file);
+      _b_log.log("         hash = " .. info.hash);
       _b_log.log("===========================================");
       _b_log.log("");
 
@@ -45,7 +45,7 @@ function startapp.startApp(callback)
 
       --load App from file
       _b_log.log("START_APP -- Loading App file. heap=" .. node.heap());
-      local status, app = pcall(dofile(config.app_contents_file));
+      local status, app = pcall(dofile(config.app-contents_file));
       if(status) then
         _b_log.log("START_APP -- App loaded SUCCESSFULLY. heap=" .. node.heap());
         _app = app;
@@ -76,7 +76,7 @@ function startapp.startApp(callback)
     end
 
   else
-    _b_log.log("START_APP -- File '".. config.app_contents_file .."' or '".. config.app_info_file .."' not found.");
+    _b_log.log("START_APP -- File '".. config.app-contents_file .."' or '".. config.app-info_file .."' not found.");
     callback("app-file-error");
   end
 

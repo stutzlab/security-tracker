@@ -3,15 +3,17 @@ if(log == nil) then
     log = dofile("util-log.lua");
 end
 
-local config = dofile("bootstrap_config.lua");
+local config = dofile("bootstrap-config.lua");
 log.log("captive module started loading. heap=" .. node.heap());
 
 local captive = {};
 
 local active = false;
 
-local wifiStaStatusTxt = "No Info";
-local wifiStaStatus = "-1";
+local wifiStatus = {
+  txt = "No Info",
+  status = "-1"
+}
 
 local srv = nil;
 
@@ -21,7 +23,7 @@ local srv = nil;
 function captive.start(requestHandler, timeoutMillis, listener)
   if(not active) then
     active = true;
-    dofile("util-captive-start.lua")(config.wifi_captive_ssid);
+    dofile("util-captive-start.lua")(config.wifi_captive_ssid, wifiStatus);
     captive.setupServer(requestHandler, listener);
   else
     log.log("CAPTIVE -- Captive portal already activated. Skipping.");

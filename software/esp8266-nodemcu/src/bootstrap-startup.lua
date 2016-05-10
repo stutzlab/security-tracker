@@ -1,4 +1,4 @@
-dofile("bootstrap_log.lua");--2100
+dofile("bootstrap-log.lua");--2100
 
 local b = {};
 
@@ -6,15 +6,15 @@ function b.startup(callback)
 
   _b_log.log("");
   _b_log.log("===========================================");
-  _b_log.log("**** Starting " .. dofile("bootstrap_config.lua").device_name .. " ****");
-  _b_log.log("App URL: " .. dofile("bootstrap_config.lua").app_info_url);
+  _b_log.log("**** Starting " .. dofile("bootstrap-config.lua").device_name .. " ****");
+  _b_log.log("App URL: " .. dofile("bootstrap-config.lua").app-info_url);
   _b_log.log("Boot reason: " .. node.bootreason());
   _b_log.log("===========================================");
   _b_log.log("");
 
   local watchdog = dofile("util-watchdog.lua");--5800
 
-  if(dofile("bootstrap_utils.lua").getAppInfoFromFile() == nil) then
+  if(dofile("bootstrap-utils.lua").getAppInfoFromFile() == nil) then
       _b_log.log("BOOTSTRAP -- App file not found. Incrementing watchdog to force captive portal.");
       watchdog.increment();
       watchdog.increment();

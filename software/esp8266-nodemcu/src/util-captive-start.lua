@@ -2,7 +2,7 @@ if(log == nil) then
     log = dofile("util-log.lua");
 end
 
-local function start(wifi_ssid)
+local function start(wifi_ssid, wifiStatus)
 
   log.log("CAPTIVE -- Starting captive portal");
 
@@ -10,19 +10,19 @@ local function start(wifi_ssid)
   log.log("CAPTIVE -- Starting Wifi AP");
   wifi.setmode(wifi.STATIONAP);
 
-  local _bootstrap_captive_ip = {
+  local captive_ip = {
    ip = "10.10.10.10",
    netmask = "255.255.255.0",
    gateway = "10.10.10.10"
   }
-  wifi.ap.setip(_bootstrap_captive_ip);
+  wifi.ap.setip(captive_ip);
 
 
-  local _bootstrap_captive_wifi = {
+  local captive_wifi = {
    ssid = wifi_ssid
   --   pwd = "12345678"
   }
-  wifi.ap.config(_bootstrap_captive_wifi);
+  wifi.ap.config(captive_wifi);
 
   dhcp_config ={};
   dhcp_config.start = "10.10.10.1";
@@ -31,31 +31,31 @@ local function start(wifi_ssid)
 
   --WIFI STATION STATUS
   wifi.sta.eventMonReg(wifi.STA_IDLE, function(prev)
-     wifiStaStatusTxt = "Idle";
-     wifiStaStatus = "" .. wifi.STA_IDLE;
+     wifiStatus.txt = "Idle";
+     wifiStatus.status = wifi.STA_IDLE;
   end)
   wifi.sta.eventMonReg(wifi.STA_CONNECTING, function(prev)
-     wifiStaStatusTxt = "Connecting";
-     wifiStaStatus = "" .. wifi.STA_CONNECTING;
+     wifiStatus.txt = "Connecting";
+     wifiStatus.status = wifi.STA_CONNECTING;
   end)
   wifi.sta.eventMonReg(wifi.STA_WRONGPWD, function(prev)
-     wifiStaStatusTxt = "Wrong password";
-     wifiStaStatus = "" .. wifi.STA_WRONGPWD;
+     wifiStatus.txt = "Wrong password";
+     wifiStatus.status = wifi.STA_WRONGPWD;
      wifi.sta.eventMonStop();
   end)
   wifi.sta.eventMonReg(wifi.STA_APNOTFOUND, function(prev)
-     wifiStaStatusTxt = "Network not found";
-     wifiStaStatus = "" .. wifi.STA_APNOTFOUND;
+     wifiStatus.txt = "Network not found";
+     wifiStatus.status = wifi.STA_APNOTFOUND;
      wifi.sta.eventMonStop();
   end)
   wifi.sta.eventMonReg(wifi.STA_FAIL, function(prev)
-     wifiStaStatusTxt = "Fail";
-     wifiStaStatus = "" .. wifi.STA_FAIL;
+     wifiStatus.txt = "Fail";
+     wifiStatus.status = wifi.STA_FAIL;
      wifi.sta.eventMonStop();
   end)
   wifi.sta.eventMonReg(wifi.STA_GOTIP, function(prev)
-     wifiStaStatusTxt = "Got IP";
-     wifiStaStatus = "" .. wifi.STA_GOTIP;
+     wifiStatus.txt = "Got IP";
+     wifiStatus.status = wifi.STA_GOTIP;
      wifi.sta.eventMonStop();
      log.log("Connected to AP successfuly");
   end)

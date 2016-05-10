@@ -1,10 +1,6 @@
---heap 1100
+dofile("app-log.lua");
 
 local apputils = {};
-
-function apputils.isConnectedToInternet(callback)
-  bootstrap_isConnectedToInternet(callback);
-end
 
 function apputils.stringSplit(str, separatorChar)
   local result = {};
