@@ -37,8 +37,8 @@ function a.appRegistrationRequestHandler(path, params, responseCallback)
             log.log("REGISTRATION -- App registration successful. response=" .. data);
             local response = cjson.decode(data);
             local registration = {
-              app-uid = response.app-uid,
-              account_id = response.account_id
+              app_uid = response.app_uid,
+              account_id = response.account_id,
               access_token = response.access_token,
               refresh_token = response.refresh_token
             }

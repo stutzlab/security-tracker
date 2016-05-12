@@ -55,7 +55,7 @@ function appupdate.checkForUpdates(listener)
           end
 
           if(downloadNewApp) then
-            dofile("bootstrap-appupdate-download.lua")(_app-info_remote);
+            dofile("bootstrap-appupdate-dl.lua")(_app-info_remote);
           end
 
       else

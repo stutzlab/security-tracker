@@ -10,7 +10,7 @@ local captive = {};
 
 local active = false;
 
-local wifiStatus = {
+wifiStatus = {
   txt = "No Info",
   status = "-1"
 }
@@ -23,7 +23,7 @@ local srv = nil;
 function captive.start(requestHandler, timeoutMillis, listener)
   if(not active) then
     active = true;
-    dofile("util-captive-start.lua")(config.wifi_captive_ssid, wifiStatus);
+    dofile("util-captive-apstart.lua").apstart(config.wifi_captive_ssid);
     captive.setupServer(requestHandler, listener);
   else
     log.log("CAPTIVE -- Captive portal already activated. Skipping.");
@@ -31,7 +31,7 @@ function captive.start(requestHandler, timeoutMillis, listener)
 end
 
 function captive.setupServer(requestHandler, listener)
-  srv = dofile("util-captive-setupserver.lua")(requestHandler, listener, srv);
+  srv = dofile("util-captive-server.lua").setupServer(requestHandler, listener, srv);
 end
 
 function captive.stop()
@@ -44,7 +44,7 @@ end
 
 --callback(httpStatus, responseMimeType, bodyContents, event)
 function captive.wifiLoginRequestHandler(path, params, callback)
-  dofile("util-captive-wifi.lua").wifiLoginRequestHandler(path, params, config, callback);
+  dofile("util-captive-wifi.lua").wifiLoginRequestHandler(path, params, callback);
 end
 
 log.log("captive module loaded. heap=" .. node.heap());

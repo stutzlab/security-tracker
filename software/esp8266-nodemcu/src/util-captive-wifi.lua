@@ -5,8 +5,8 @@ end
 local a = {};
 
 --callback(httpStatus, responseMimeType, bodyContents, event)
-function a.wifiLoginRequestHandler(path, params, config, callback)
-  log.log("CAPTIVE -- handling request path=" .. path);
+function a.wifiLoginRequestHandler(path, params, callback)
+  log.log("CAPTIVE -- Handling request path=" .. path);
   for k,v in pairs(params) do
     log.log("CAPTIVE -- " .. k .. "=" .. v);
   end
@@ -14,35 +14,26 @@ function a.wifiLoginRequestHandler(path, params, config, callback)
   local buf = "";
   local mimeType = "application/json";
   local httpStatus = "200 OK";
+  local serveFile = false;
   local event = nil;
 
   --LOGIN PAGE
-  if(path == "" or path == "/") then
-     log.log("CAPTIVE -- Showing ssid/password page");
-     buf = buf.."<html><head><title>" .. config.wifi_captive_browser_title .. "</title></head>";
-     buf = buf.."<body>";
-     buf = buf.."<h2>" .. config.wifi_captive_title .. "</h2>";
-     buf = buf.."<div>" .. config.wifi_captive_message .. "</div>";
-     buf = buf.."<form action=\"/\" method=\"get\">";
-     buf = buf.."<input type=\"hidden\" name=\"action\" value=\"login\" />";
-     buf = buf.."<p>Rede Wifi: <input type=\"text\" name=\"ssid\" /></p>";
-     buf = buf.."<p>Senha: <input type=\"text\" name=\"pass\" /></p>";
-     buf = buf.."<input type=\"submit\" value=\"Enviar\">";
-     buf = buf.."</form>";
-     buf = buf.."</body></html>";
+  if((path == "" or path == "/") and params.action == nil) then
+     log.log("CAPTIVE -- Showing ssid/password page.");
+     buf = "captive-wifi.html";
+     serveFile = true;
      mimeType = "text/html";
-
      a.startNetworkScan();
 
   --PROCESS STATUS REQUEST
   elseif(params.action == "status") then
-     log.log("Wifi status: " .. wifiStaStatusTxt);
+     log.log("Wifi status: " .. wifiStatus.txt);
      if(wifi.sta.getip() ~= nil) then
         log.log("station ip: " .. wifi.sta.getip());
-        buf = buf.."{'status':'" .. wifiStaStatus .. "','message':'" .. wifiStaStatusTxt .. "','ip':'" .. wifi.sta.getip() .. "'}";
+        buf = buf.."{'status':'" .. wifiStatus.status .. "','message':'" .. wifiStatus.txt .. "','ip':'" .. wifi.sta.getip() .. "'}";
      else
         log.log("Could not get ip");
-        buf = buf.."{'status':'" .. wifiStaStatus .. "','message':'" .. wifiStaStatusTxt .. "'}";
+        buf = buf.."{'status':'" .. wifiStatus.status .. "','message':'" .. wifiStatus.txt .. "'}";
      end
 
   --PROCESS START NETWORKS SCAN
@@ -80,8 +71,12 @@ function a.wifiLoginRequestHandler(path, params, config, callback)
      buf = buf.."{'result':'ERROR','message':'Invalid action'}";
      httpStatus = "400 Bad Request";
   end
-
-  callback(httpStatus, mimeType, buf, event);
+  if(serveFile) then
+    log.log("CAPTIVE -- Serving contents from file");
+  else
+    log.log("CAPTIVE -- Sending raw response contents. length=" .. string.len(buf));
+  end
+  callback(httpStatus, mimeType, buf, event, serveFile);
 end
 
 local networksJson = "{'status':'pending'}";

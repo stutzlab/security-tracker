@@ -2,7 +2,9 @@ if(log == nil) then
     log = dofile("util-log.lua");
 end
 
-local function start(wifi_ssid, wifiStatus)
+local a = {};
+
+function a.apstart(wifi_ssid)
 
   log.log("CAPTIVE -- Starting captive portal");
 
@@ -61,4 +63,4 @@ local function start(wifi_ssid, wifiStatus)
   end)
 end
 
-return start;
+return a;

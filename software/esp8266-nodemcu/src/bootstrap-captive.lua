@@ -13,7 +13,7 @@ function a.startCaptive()
     captiveTimeout = 0;
   end
 
-  local captive = dofile("util-captive.lua");--14216
+  local captive = dofile("util-captive.lua");
   _b_log.log("captive module loaded. Starting it. heap=" .. node.heap());
   captive.start(captive.wifiLoginRequestHandler, captiveTimeout, function(event)
 
