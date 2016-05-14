@@ -10,7 +10,7 @@ function a.wifiLoginRequestHandler(path, params, callback)
   for k,v in pairs(params) do
     log.log("CAPTIVE -- " .. k .. "=" .. v);
   end
-  
+
   local buf = "";
   local mimeType = "application/json";
   local httpStatus = "200 OK";
@@ -55,16 +55,26 @@ function a.wifiLoginRequestHandler(path, params, callback)
         log.log("SSID: " .. params.ssid);
         log.log("PASS: " .. params.pass);
         wifi.sta.config(params.ssid,params.pass,1);--auto reconnect
-        local status, err = pcall(wifi.sta.connect);
-        if(status) then
-           buf = buf.."{'result':'OK','message':'SSID and PASSWORD processed'}";
-           event = "wifi_connect";
-        else
-           log.log("Exception while calling wifi.sta.connect(). err=" .. err);
+--        local status, err = pcall(wifi.sta.config, params.ssid,params.pass,1);--auto reconnect
+local status = true;
+        if(not status) then
+           log.log("Exception while calling wifi.sta.config(). err=" .. err);
            buf = buf.."{'result':'ERROR','message':'" .. err .. "'}";
+           httpStatus = "400 Bad Request";
+        else
+          local status, err = pcall(wifi.sta.connect);
+          if(status) then
+             buf = buf.."{'result':'OK','message':'SSID and PASSWORD processed'}";
+             event = "wifi_connect";
+          else
+             log.log("Exception while calling wifi.sta.connect(). err=" .. err);
+             buf = buf.."{'result':'ERROR','message':'" .. err .. "'}";
+             httpStatus = "400 Bad Request";
+          end
         end
      else
         buf = buf.."{'result':'ERROR','message':'Both \'ssid\' and \'pass\' parameters must be set'}";
+        httpStatus = "400 Bad Request";
      end
 
   else

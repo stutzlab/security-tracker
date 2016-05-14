@@ -16,10 +16,10 @@ local appupdate = {};
 --};
 
 --listener results: "app-update-error", "app-up-to-date", "app-updated"
-function appupdate.checkForUpdates(listener)
+function appupdate.checkForUpdates(appInfoUrl, listener)
   _b_log.log("UPDATE -- Initiating App update process...");
   _b_log.log("UPDATE -- Trying to connect to Ronda.io server");
-  http.get(dofile("bootstrap-config.lua").app-update_info-url, nil, function(code, data)
+  http.get(appInfoUrl, nil, function(code, data)
     if (code < 0) then
       _b_log.log("UPDATE -- Error during app info download. code=" .. code);
       if(not file.exists()) then

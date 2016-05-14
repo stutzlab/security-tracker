@@ -1,5 +1,4 @@
---TIMER 6 - CAPTIVE PORTAL TIMEOUT
---TIMER 5 - INTERNET CONNECTION DETECTOR
+--TIMER 6 - CAPTIVE PORTAL TIMEOUT AND INTERNET SENSOR
 
 print(">>> StutzThings <<<");
 print("Enter 'x' to skip Bootstraper");

@@ -1,9 +1,12 @@
 
 local a = {};
 
+local socket = net.createConnection(net.TCP, false);
+
 --timerId - unused timerid (from 0 to 5)
 function a.isConnectedToInternet(isSsl, host, port, timerId, timeout, callback)
-  local socket = net.createConnection(net.TCP, isSsl);
+  socket:close();
+  socket = net.createConnection(net.TCP, isSsl);
 
   --success verification
   socket:on("connection", function(sck, c)

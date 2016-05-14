@@ -11,7 +11,7 @@ _app_uploadStatus = {
   pendingBytes = 0
 };
 
-function a.uploadDataToServer()
+function a.uploadDataToServer(callback)
   log.log("UPLOAD -- Sending files to server");
 
   --sort nmea file names
@@ -33,7 +33,7 @@ function a.uploadDataToServer()
   uploadStatus.pendingFiles = #fnames;
 
   --send older files first
-  dofile("app-upload-send.lua").uploadFiles(fnames, 1);
+  dofile("app-upload-send.lua").uploadFiles(fnames, 1, callback);
 
 end
 

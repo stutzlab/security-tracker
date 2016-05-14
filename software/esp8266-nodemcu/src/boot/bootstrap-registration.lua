@@ -4,11 +4,16 @@ local a = {};
 
 log.log("REGISTRATION -- Checking App registration...");
 
-local FILE_REGISTRATION = "app-registration";
+local FILE_REGISTRATION = "account-registration";
 local URL_APPS = "http://tracker.stutzthings.com/tracker/devices/apps";
 
 local registrationCounter = 0;
 local registration = nil;
+
+--callback(true) if registration is valid (even offline)
+function a.checkAppRegistration(callback)
+  dofile("bootstrap-registration-check.lua").checkAppRegistration(FILE_REGISTRATION, callback);
+end
 
 function a.startAppRegistration(callback)
   log.log("REGISTRATION -- Initiating captive portal for App registration");
@@ -19,11 +24,6 @@ function a.startAppRegistration(callback)
         10000,
         callback)
   registrationCaptive = nil;
-end
-
---callback(true) if registration is valid (even offline)
-function a.checkAppRegistration(callback)
-  dofile("app-registration-check.lua").checkAppRegistration(FILE_REGISTRATION, callback);
 end
 
 function a.getRegistration()
