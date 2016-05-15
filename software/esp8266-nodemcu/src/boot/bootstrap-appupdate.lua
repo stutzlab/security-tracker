@@ -1,9 +1,9 @@
 --heap 8800
-dofile("bootstrap-log.lua");
+dofile("boot-log.lua");
 
 local appupdate = {};
 
---global bootstrap-app-info = {
+--global boot-app-info = {
 --  name = "undefined",
 --  version = "undefined",
 --  hash = "AAA",
@@ -36,7 +36,7 @@ function appupdate.checkForUpdates(appInfoUrl, listener)
           and _app-info_remote.version ~= nil and _app-info_remote.hash ~= nil) then
           _b_log.log("app-UPDATE -- App info sanity check OK");
 
-          local _app-info_local = dofile("bootstrap-utils.lua").getAppInfoFromFile();
+          local _app-info_local = dofile("boot-utils.lua").getAppInfoFromFile();
 
           --Verify if local file info contents matches remote (no need to update app)
           local downloadNewApp = false;
@@ -55,7 +55,7 @@ function appupdate.checkForUpdates(appInfoUrl, listener)
           end
 
           if(downloadNewApp) then
-            dofile("bootstrap-appupdate-dl.lua")(_app-info_remote);
+            dofile("boot-appupdate-dl.lua")(_app-info_remote);
           end
 
       else

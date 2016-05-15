@@ -1,27 +1,27 @@
-dofile("bootstrap-log.lua");--2100
+dofile("boot-log.lua");
 
 local b = {};
 
-function b.startup(callback)
+function b:startup(callback)
 
-  local config = dofile("bootstrap-config.lua");
+  local config = requireModule("boot-config.lua");
   _b_log.log("");
   _b_log.log("===========================================");
-  _b_log.log("**** Starting " .. dofile("bootstrap-config.lua").device_name .. " ****");
+  _b_log.log("**** Starting " .. config.device_name .. " ****");
   if(config.app_custom_info_url == nil) then
     _b_log.log("App default URL: " .. config.app_default_info_url);
   else
     _b_log.log("App custom URL: " .. config.app_custom_info_url);
   end
-  _b_log.log("App default URL: " .. dofile("bootstrap-config.lua").app_default_info_url);
+  _b_log.log("App default URL: " .. config.app_default_info_url);
   _b_log.log("Boot reason: " .. node.bootreason());
   _b_log.log("===========================================");
   _b_log.log("");
   config = nil;
 
-  local watchdog = dofile("util-watchdog.lua");
+  local watchdog = requireModule("util-watchdog.lua");
 
-  if(dofile("bootstrap-utils.lua").getAppInfoFromFile() == nil) then
+  if(dofile("boot-utils.lua").getAppInfoFromFile() == nil) then
       _b_log.log("BOOTSTRAP -- App file not found. Incrementing watchdog to force captive portal.");
       watchdog.increment();
       watchdog.increment();
@@ -29,7 +29,7 @@ function b.startup(callback)
   end
 
   if(watchdog.isTriggered(2)) then
-    dofile("bootstrap-captive.lua").startCaptive(function(event)
+    dofile("boot-captive.lua").startCaptive(function(event)
 
       if(event=="wifi_connect") then
         _b_log.log("BOOTSTRAP -- Wifi connected");
@@ -53,7 +53,7 @@ end
 
 function b.verifyRegistrationAndStartApp()
   dofile("util-connectivity.lua").isGoogleReacheable(6, 1000, function(internetDetected)
-    dofile("bootstrap-registration.lua").checkAppRegistration(function(validRegistration)
+    dofile("boot-registration.lua").checkAppRegistration(function(validRegistration)
 
       --device connected to Internet
       if(internetDetected) then
@@ -65,7 +65,7 @@ function b.verifyRegistrationAndStartApp()
         else
           log.log("APP -- Device is connected to the Internet and needs registration. Starting captive portal.");
 
-          dofile("bootstrap-registration.lua").startAppRegistration(function(event)
+          dofile("boot-registration.lua").startAppRegistration(function(event)
 
             if(event == "registration-ok") then
               log.log("REGISTRATION -- App registration successful");
@@ -92,14 +92,14 @@ function b.verifyRegistrationAndStartApp()
 
         end
       end
-      
+
     end)
   end)
 
 end
 
-function b.tryUpdateAndStartApp()
-  local registration = dofile("bootstrap-registration.lua").getRegistration();
+function b:tryUpdateAndStartApp()
+  local registration = dofile("boot-registration.lua").getRegistration();
   if(registration == nil) then
     log.log("BOOTSTRAP -- Registration not found. Strange. Rebooting unit.");
     dofile("util-watchdog.lua").increment();
@@ -121,7 +121,7 @@ function b.updateApp(registration, callback)
   log.log("BOOTSTRAP -- Updating app. appInfoUrl=" .. appInfoUrl);
 
 
-  dofile("bootstrap-appupdate.lua").checkForUpdates(appInfoUrl, function(result)
+  dofile("boot-appupdate.lua").checkForUpdates(appInfoUrl, function(result)
 
     if(result=="app-updated") then
       _b_log.log("BOOTSTRAP - Restarting unit to activate new app version");

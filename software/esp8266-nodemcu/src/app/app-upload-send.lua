@@ -25,7 +25,7 @@ function a.uploadFiles(fnames, i, callback)
       conn:on("connection", function(sck, c)
         log.log("UPLOAD -- Sending POST to server with file contents. filename=" .. filename .. "; size=" .. uploadSize);
         local post = "POST " .. app-URL_APPS .. "/" .. registration.app-uid .. "/nmea_files" .. " HTTP/1.0\r\n";
-        post = post .. "User-Agent: ".. bootstrap-getConfig().device-name .. "\r\n";
+        post = post .. "User-Agent: ".. boot-getConfig().device-name .. "\r\n";
         post = post .. "Content-Type: text/csv\r\n";
         post = post .. "X-Content-Hash: " .. fileHash .. "\r\n";
         post = post .. "X-Internal-Filename: " .. filename .. "\r\n";

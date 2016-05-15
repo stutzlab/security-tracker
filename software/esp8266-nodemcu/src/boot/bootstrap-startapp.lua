@@ -1,10 +1,10 @@
-dofile("bootstrap-log.lua");
+dofile("boot-log.lua");
 
 local startapp = {};
 
---local utils = dofile("bootstrap-utils.lua");--3000
+--local utils = dofile("boot-utils.lua");--3000
 local watchdog = dofile("util-watchdog.lua");--5800
-local config = dofile("bootstrap-config.lua");
+local config = dofile("boot-config.lua");
 
 --callback - app-file-error", "app-startup-success", "app-startup-error"
 function startapp.startApp(callback)
@@ -19,7 +19,7 @@ function startapp.startApp(callback)
   if(fc and fi) then
     _b_log.log("START_APP -- App files found");
 
-    local info = dofile("bootstrap-utils.lua").getAppInfoFromFile();
+    local info = dofile("boot-utils.lua").getAppInfoFromFile();
 
     _b_log.log("START_APP -- Checking app integrity...");
     local fh = crypto.toHex(crypto.fhash("sha1", config.app-contents_file));

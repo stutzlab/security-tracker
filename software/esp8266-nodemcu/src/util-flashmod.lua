@@ -19,13 +19,13 @@ function a.writeModuleTbl(tbl, moduleName)
   print("WRITING MODULE FILES " .. moduleName);
   for k,v in pairs(tbl) do
     --print("writeModule moduleName=" .. moduleName .. "; function="  .. k);
-	if type(v) == "function" then
+	  if type(v) == "function" then
       file.open(string.format("_#%s_%s", moduleName, k), "w+");
       file.write(string.dump(v));
       file.close();
       tbl[k] = nil;
-      --print("wroteModuleFunc moduleName=" .. moduleName .. "; k=" .. k);      
-	end
+      --print("wroteModuleFunc moduleName=" .. moduleName .. "; k=" .. k);
+	  end
   end
   return a.loadModule(moduleName);
 end
@@ -37,8 +37,8 @@ function a.loadModule(moduleName)
   --print("LOAD MODULE name=" .. moduleName);
   setmetatable(tbl, {
     __index = function(t, k)
-      --print("LOADING FILE " .. string.format("_#%s_%s", t._MOD_NAME, k));
-      return assert(loadfile(string.format("_#%s_%s", t._MOD_NAME, k)));
+      print("LOADING ELEMENT " .. string.format("_#%s_%s", t._MOD_NAME, k));
+      return loadfile(string.format("_#%s_%s", t._MOD_NAME, k));
     end
   });
   return tbl;
@@ -59,28 +59,38 @@ end
 
 --verifies if module was already written to flash and load it
 --if not written to flash yet, write it then load
-function requireFlashModule(sourceFile)
-  local flashmod = dofile("util-flashmod.lua");
-  local writeModule = true;
-  moduleName = string.sub(sourceFile, 1, string.len(sourceFile)-4);
---  local sourceFile = dofile("util/flashmod.lua").getSourceFile(moduleName);
-  local sourceFileHash = "_#" .. sourceFile .. ".fh";
-  --print("requireFlashModule moduleName=" .. moduleName .. "; sourceFile=" .. sourceFile);
-  file.open(sourceFileHash, "r");
-  local status, result = pcall(file.read);
-  file.close(); 
-  if(status) then
-    local rh = result;
-    local fh = flashmod.fhash(sourceFile);
-    --print("requireFlashModule rh=" .. rh .. "; fh=" .. fh);
-    if(fh == rh) then
-      writeModule = false;
-    end
-  end
-  if(writeModule) then
-    return flashmod.writeModule(sourceFile);
+function requireModule(sourceFile)
+  local mod = flashModules[sourceFile];
+  if(mod ~= nil) then
+    print("REUSING MODULE FROM MEMORY");
+    return mod;
   else
-    return flashmod.loadModule(moduleName);
+    print("LOADING MODULE FROM DISK " .. #flashModules);
+    local flashmod = dofile("util-flashmod.lua");
+    local writeModule = true;
+    moduleName = string.sub(sourceFile, 1, string.len(sourceFile)-4);
+  --  local sourceFile = dofile("util/flashmod.lua").getSourceFile(moduleName);
+    local sourceFileHash = "_#" .. sourceFile .. ".fh";
+    --print("requireFlashModule moduleName=" .. moduleName .. "; sourceFile=" .. sourceFile);
+    file.open(sourceFileHash, "r");
+    local status, result = pcall(file.read);
+    file.close();
+    if(status) then
+      local rh = result;
+      local fh = flashmod.fhash(sourceFile);
+      --print("requireFlashModule rh=" .. rh .. "; fh=" .. fh);
+      if(fh == rh) then
+        writeModule = false;
+      end
+    end
+    if(writeModule) then
+      mod = flashmod.writeModule(sourceFile);
+    else
+      mod = flashmod.loadModule(moduleName);
+    end
+    --FIXME Cache is not working!
+    print("FM " .. #flashModules);
+    return mod;
   end
 end
 
@@ -92,5 +102,7 @@ package = nil;
 newproxy = nil;
 require = nil;
 collectgarbage();
+
+flashModules = {};
 
 return a;

@@ -1,4 +1,4 @@
-dofile("bootstrap-log.lua");--2100
+dofile("boot-log.lua");--2100
 
 local a = {};
 
@@ -15,7 +15,7 @@ function a.startCaptive(callback)
 
   local captive = dofile("util-captive.lua");
   _b_log.log("captive module loaded. Starting it. heap=" .. node.heap());
-  captive.start(dofile("bootstrap-config.lua").wifi_captive_ssid, captive.wifiLoginRequestHandler, captiveTimeout, callback);
+  captive.start(dofile("boot-config.lua").wifi_captive_ssid, captive.wifiLoginRequestHandler, captiveTimeout, callback);
 
 end
 

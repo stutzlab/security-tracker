@@ -12,7 +12,7 @@ local registration = nil;
 
 --callback(true) if registration is valid (even offline)
 function a.checkAppRegistration(callback)
-  dofile("bootstrap-registration-check.lua").checkAppRegistration(FILE_REGISTRATION, callback);
+  dofile("boot-registration-check.lua").checkAppRegistration(FILE_REGISTRATION, callback);
 end
 
 function a.startAppRegistration(callback)

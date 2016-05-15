@@ -1,5 +1,5 @@
 --heap 3000
-dofile("bootstrap-log.lua");
+dofile("boot-log.lua");
 
 local butils = {};
 
@@ -28,6 +28,6 @@ function butils.performFactoryReset(watchdog)
   _b_log.log("UTILS -- Factory reset done. All non bootstrap files were removed (including App package and data).");
 end
 
-_b_log.log("bootstrap-utils module loaded. heap=" .. node.heap());
+_b_log.log("boot-utils module loaded. heap=" .. node.heap());
 
 return butils;

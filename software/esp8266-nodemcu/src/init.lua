@@ -21,7 +21,7 @@ tmr.register(0, 1000, tmr.ALARM_SINGLE, function()
 
   if(runBootstrap) then
     print("Launching bootstrap...");
-    --dofile("init-bootstrap.lua");
+    --dofile("call-boot.lua");
 
   else
     print("Skipping bootstrap");

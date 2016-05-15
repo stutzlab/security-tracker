@@ -9,13 +9,13 @@ local function download(_app-info_remote)
     _b_log.log("app-UPDATE -- There is enough disk. Proceding with update...");
   else
     _b_log.log("app-UPDATE -- Insufficient disk detected. Performing a factory reset to cleanup space...");
-    dofile("bootstrap-utils.lua").performFactoryReset();
+    dofile("boot-utils.lua").performFactoryReset();
   end
 
   _b_log.log("app-UPDATE -- Downloading App contents and saving to disk...");
 
   --Download contents to a temp file
-  local config = dofile("bootstrap-config.lua");
+  local config = dofile("boot-config.lua");
   local appContentsTemp = config.app-contents_file .. ".tmp"
   file.open(appContentsTemp, "w+");
 

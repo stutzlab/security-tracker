@@ -30,7 +30,7 @@ function a.checkAppRegistration(registrationFile, checkOnline, callback)
             local appStatus = {
               node_bootreason = node.bootreason(),
               node_heap = node.heap(),
-              bootstrap-watchdogcounter = dofile("util-watchdog.lua").getCounter(),
+              boot-watchdogcounter = dofile("util-watchdog.lua").getCounter(),
               fsinfo_remaining = remaining,
               fsinfo_used = used,
               fsinfo_total = total,
