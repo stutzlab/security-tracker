@@ -1,17 +1,17 @@
 --TIMER 6 - CAPTIVE PORTAL TIMEOUT AND INTERNET SENSOR
 
 print(">>> StutzThings <<<");
-print("Enter 'x' to skip Bootstraper");
+print("Enter 'x' to skip booter");
 
 --global variable containing the launched App
 _app = nil;
 
-local runBootstrap = true;
+local runboot = true;
 
 uart.setup(0,9600,8,0,1,0);
 uart.on("data", 0, function(data)
   if(data == "x" or data == "X") then
-    runBootstrap = false;
+    runboot = false;
   end
 end);
 
@@ -19,12 +19,12 @@ tmr.register(0, 1000, tmr.ALARM_SINGLE, function()
   --unregister callback
   uart.on("data");
 
-  if(runBootstrap) then
-    print("Launching bootstrap...");
+  if(runboot) then
+    print("Launching boot...");
     --dofile("call-boot.lua");
 
   else
-    print("Skipping bootstrap");
+    print("Skipping boot");
   end
 end)
 

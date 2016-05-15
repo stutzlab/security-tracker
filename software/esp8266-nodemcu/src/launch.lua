@@ -1,6 +1,8 @@
-print("Running bootstrap... heap=" .. node.heap());
+print("Running boot... heap=" .. node.heap());
 
 local boot = requireModule("boot.lua");
+boot.init();
+
 local boot = requireModule("boot-startapp.lua");
 
 boot.startup(function()
