@@ -3,28 +3,28 @@ if(log == nil) then
     log = dofile("util-log.lua");
 end
 
-local watchdogutils = {};
+local a = {};
 
 local watchdogCounter = 0;
 local fileCounter = "_watchdog.counter";
 
-function watchdogutils.setFile(filename)
+function a.setFile(filename)
   fileCounter = filename;
   init();
 end
 
-function watchdogutils.reset()
+function a.reset()
   file.open(fileCounter, "w+");
   file.write("0");
   file.close();
 end
 
-function watchdogutils.getCounter()
+function a.getCounter()
   local f = file.open(fileCounter, "r");
   if(not f) then
     file.close();
     log.log("WATCHDOG -- Creating '" .. fileCounter .. "' with '0' - " .. fileCounter);
-    watchdogutils.reset();
+    a.reset();
     f = file.open(fileCounter, "r");
   end
   local watchdogCounter = file.read();
@@ -32,18 +32,18 @@ function watchdogutils.getCounter()
   return tonumber(watchdogCounter);
 end
 
-function watchdogutils.increment()
-  local counter = watchdogutils.getCounter();
+function a.increment()
+  local counter = a.getCounter();
   file.open(fileCounter, "w+");
   counter = counter + 1;
   file.write(counter .. "");
   file.close();
 end
 
-function watchdogutils.isTriggered(counter)
-  return watchdogutils.getCounter() >= counter;
+function a.isTriggered(counter)
+  return a.getCounter() >= counter;
 end
 
 log.log("watchdog module loaded. heap=" .. node.heap());
 
-return watchdogutils;
+return a;

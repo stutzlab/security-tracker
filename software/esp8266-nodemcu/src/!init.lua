@@ -21,7 +21,7 @@ tmr.register(0, 1000, tmr.ALARM_SINGLE, function()
 
   if(runboot) then
     print("Launching boot...");
-    --dofile("call-boot.lua");
+    --dofile("launch.lua");
 
   else
     print("Skipping boot");

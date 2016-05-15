@@ -8,7 +8,7 @@ function a.writeModule(sourceFile)
   local moduleName = string.sub(sourceFile, 1, string.len(sourceFile)-4);
   --write file hash
   local fileHash = a.fhash(sourceFile);
-  local sourceFileHash = "_#" .. sourceFile .. ".fh";
+  local sourceFileHash = "#_" .. sourceFile .. ".fh";
   file.open(sourceFileHash, "w+");
   file.write(fileHash);
   file.close();
@@ -20,7 +20,7 @@ function a.writeModuleTbl(tbl, moduleName)
   for k,v in pairs(tbl) do
     --print("writeModule moduleName=" .. moduleName .. "; function="  .. k);
 	  if type(v) == "function" then
-      file.open(string.format("_#%s_%s", moduleName, k), "w+");
+      file.open(string.format("#_%s_%s", moduleName, k), "w+");
       file.write(string.dump(v));
       file.close();
       tbl[k] = nil;
@@ -37,8 +37,8 @@ function a.loadModule(moduleName)
   --print("LOAD MODULE name=" .. moduleName);
   setmetatable(tbl, {
     __index = function(t, k)
-      print("LOADING ELEMENT " .. string.format("_#%s_%s", t._MOD_NAME, k));
-      return loadfile(string.format("_#%s_%s", t._MOD_NAME, k));
+      print("LOADING ELEMENT " .. string.format("#_%s_%s", t._MOD_NAME, k));
+      return loadfile(string.format("#_%s_%s", t._MOD_NAME, k));
     end
   });
   return tbl;
@@ -66,11 +66,11 @@ function requireModule(sourceFile)
     return mod;
   else
     print("LOADING MODULE FROM DISK " .. #flashModules);
-    local flashmod = dofile("util-flashmod.lua");
+    local flashmod = dofile("_flashmod.lua");
     local writeModule = true;
     moduleName = string.sub(sourceFile, 1, string.len(sourceFile)-4);
   --  local sourceFile = dofile("util/flashmod.lua").getSourceFile(moduleName);
-    local sourceFileHash = "_#" .. sourceFile .. ".fh";
+    local sourceFileHash = "#_" .. sourceFile .. ".fh";
     --print("requireFlashModule moduleName=" .. moduleName .. "; sourceFile=" .. sourceFile);
     file.open(sourceFileHash, "r");
     local status, result = pcall(file.read);
@@ -88,7 +88,11 @@ function requireModule(sourceFile)
     else
       mod = flashmod.loadModule(moduleName);
     end
-    --FIXME Cache is not working!
+    --FIXME Memory cache is not working!
+    print("CALLING init() for module " .. sourceFile);
+    if(mod.init ~= nil) then
+      mod:init();
+    end
     print("FM " .. #flashModules);
     return mod;
   end
