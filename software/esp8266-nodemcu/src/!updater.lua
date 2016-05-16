@@ -41,14 +41,10 @@ end
 
 --listener results: "app-update-error", "app-up-to-date", "app-updated"
 function a:updateApp(appInfoUrl, listener)
-  self.logger:log("UPDATE -- Initiating App update process...");
-  self.logger:log("UPDATE -- Trying to connect to Ronda.io server");
+  self.logger:log("UPDATE -- Initiating App update...");
   http.get(appInfoUrl, nil, function(code, data)
     if (code < 0) then
       self.logger:log("UPDATE -- Error during app info download. code=" .. code);
-      if(not file.exists()) then
-        self.logger:log("app-UPDATE -- No App installed yet.");
-      end
       listener("app-update-error");
 
     else
@@ -58,7 +54,7 @@ function a:updateApp(appInfoUrl, listener)
       local appinfo_remote = cjson.decode(data);
       if(appinfo_remote.contents_size > 0 and appinfo_remote.name ~= nil
           and appinfo_remote.version ~= nil and appinfo_remote.contents_hash ~= nil) then
-          self.logger:log("app-UPDATE -- App info sanity check OK");
+          self.logger:log("UPDATE -- App info sanity OK");
 
           local appinfo_local = self:getAppInfoFromFile();
 
@@ -67,14 +63,14 @@ function a:updateApp(appInfoUrl, listener)
           if(appinfo_local ~= nil) then
             if(appinfo_local.name == appinfo_remote.name and
                appinfo_local.version == appinfo_remote.version) then
-              self.logger:log("UPDATE -- Local/Remote app version matches. No need to update. name=" .. _app-info_local.name .. "; version=" .. _app-info_local.version);
+              self.logger:log("UPDATE -- App up-to-date. name=" .. appinfo_local.name .. "; version=" .. appinfo_local.version);
               listener("app-up-to-date");
             else
               downloadNewApp = true;
             end
 
           else
-            self.logger:log("UPDATE -- Could not find local app file info. Continuing update.");
+            self.logger:log("UPDATE -- Could not find local app file info");
             downloadNewApp = true;
           end
 
@@ -83,7 +79,7 @@ function a:updateApp(appInfoUrl, listener)
           end
 
       else
-        self.logger:log("UPDATE -- Downloaded app info sanity check NOT OK. Aborting update.");
+        self.logger:log("UPDATE -- Downloaded app info sanity check NOT OK");
         listener("app-update-error");
       end
 

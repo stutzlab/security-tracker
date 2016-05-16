@@ -114,35 +114,7 @@ function a:checkDeviceRegistration(checkOnline, callback)
           callback(false);
 
         elseif (code == 200) then
-          self.logger:log("REGISTRATION -- app-uid found. response=" .. registrationResponse);
-          local registrationResponse = cjson.decode(data);
-
-          if(registrationResponse.status == "active" and registrationResponse.account_id) then
-            self.logger:log("REGISTRATION -- Device registration is VALID");
-            self.logger:log("REGISTRATION -- Sending device status to server");
-            local remaining, used, total = file.fsinfo();
-            local appStatus = {
-              node_bootreason = node.bootreason(),
-              node_heap = node.heap(),
-              boot_watchdogcounter = self.watchdog:getCounter(),
-              fsinfo_remaining = remaining,
-              fsinfo_used = used,
-              fsinfo_total = total
-            };
-            http.put(app-URL_APPS .. "/" .. registration.app-uid .. "/status",
-              "Content-Type: application/json\r\n",
-              cjson.encode(appStatus), function(code, data)
-                if (code == 200) then
-                  self.logger:log("REGISTRATION -- App status POST successful.");
-                else
-                  self.logger:log("REGISTRATION -- App status POST failed. code=" .. code);
-                end
-                callback(true);
-            end);
-          else
-            self.logger:log("REGISTRATION -- App registration is INVALID");
-            callback(false);
-          end
+          self:handleRegistrationRes(code, data);
 
         else
           self.logger:log("REGISTRATION -- Error getting app-uid info. Trusting configuration data from disk without verifying on cloud. code=" .. code .. "; response=" .. registrationResponse);
@@ -160,7 +132,38 @@ function a:checkDeviceRegistration(checkOnline, callback)
     self.logger:log("REGISTRATION -- Registration file not found");
     callback(false);
   end
+end
 
+function a:handleRegistrationRes(code, data)
+  self.logger:log("REGISTRATION -- app-uid found. response=" .. registrationResponse);
+  local registrationResponse = cjson.decode(data);
+
+  if(registrationResponse.status == "active" and registrationResponse.account_id) then
+    self.logger:log("REGISTRATION -- Device registration is VALID");
+    self.logger:log("REGISTRATION -- Sending device status to server");
+    local remaining, used, total = file.fsinfo();
+    local appStatus = {
+      node_bootreason = node.bootreason(),
+      node_heap = node.heap(),
+      boot_watchdogcounter = self.watchdog:getCounter(),
+      fsinfo_remaining = remaining,
+      fsinfo_used = used,
+      fsinfo_total = total
+    };
+    http.put(app-URL_APPS .. "/" .. registration.app-uid .. "/status",
+      "Content-Type: application/json\r\n",
+      cjson.encode(appStatus), function(code, data)
+        if (code == 200) then
+          self.logger:log("REGISTRATION -- App status POST successful.");
+        else
+          self.logger:log("REGISTRATION -- App status POST failed. code=" .. code);
+        end
+        callback(true);
+    end);
+  else
+    self.logger:log("REGISTRATION -- App registration is INVALID");
+    callback(false);
+  end
 end
 
 function a:getRegistration()
@@ -238,44 +241,52 @@ function a:regCaptiveHandler(path, params, responseCallback)
               refresh_token = response.refresh_token
             }
 
-            local fo = file.open(self.constants.REGISTRATION_FILE, "w+");
-            if(fo) then
-              if(file.write(cjson.encode(registration))) then
-                self.logger:log("REGISTRATION -- Registration data written to disk. Registration successful.");
-                buf = "{'result':'OK','message':'Registration created on cloud server and written to disk. Success!'}";
-                httpStatus = "201 Created";
-                event = "registration-ok";
-
-              else
-                self.logger:log("REGISTRATION -- Registration data could not be written to disk. Registration failed.");
-                buf = "{'result':'ERROR','message':'Registration data could not be written to disk. Registration failed.'}";
-                httpStatus = "500 Internal Server Error";
-              end
-            else
-              self.logger:log("REGISTRATION -- Could not open registration file for writing. Registration failed.");
-              buf = "{'result':'ERROR','message':'Could not open registration file for writing. Registration failed.'}";
-              httpStatus = "500 Internal Server Error";
-            end
-            file.close();
+            buf, httpStatus, event = self:writeRegistrationFile();
 
           else
             self.logger:log("REGISTRATION -- App registration failed. code=" .. code .. "; data=" .. data);
-            buf = "{'result':'ERROR','message':'App registration on cloud server failed. remote server code=" .. code .. "; server response data=" .. data .. "'}";
+            buf = "{'result':'ERROR','message':'registration-failed','server-code':'" .. code .. ",'server-data':'".. data .."'}";
             httpStatus = "400 Bad Request";
           end
       end);
 
     else
-      buf = "{'result':'ERROR','message':'Registration need username and password'}";
+      buf = "{'result':'ERROR','message':'registration-need-userpass'}";
       httpStatus = "400 Bad Request";
     end
 
   else
-    buf = "{'result':'ERROR','message':'Resource not found'}";
+    buf = "{'result':'ERROR','message':'resource-notfound'}";
     httpStatus = "404 Not Found";
   end
 
   responseCallback(httpStatus, mimeType, buf, event);
+end
+
+function a:writeRegistrationFile(registration)
+  local fo = file.open(self.constants.REGISTRATION_FILE, "w+");
+  local buf = "";
+  local httpStatus = "";
+  local event = nil;
+  if(fo) then
+    if(file.write(cjson.encode(registration))) then
+      self.logger:log("REGISTRATION -- Registration data written to disk. Registration successful");
+      buf = "{'result':'OK','message':'registration-success'}";
+      httpStatus = "201 Created";
+      event = "registration-ok";
+
+    else
+      self.logger:log("REGISTRATION -- Registration data could not be written to disk. Registration failed.");
+      buf = "{'result':'ERROR','message':'registration-failed'}";
+      httpStatus = "500 Internal Server Error";
+    end
+  else
+    self.logger:log("REGISTRATION -- Could not open registration file for writing. Registration failed.");
+    buf = "{'result':'ERROR','message':'registration-failed'}";
+    httpStatus = "500 Internal Server Error";
+  end
+  file.close();
+  return buf, httpStatus, event;
 end
 
 function a:performFactoryReset()
@@ -306,7 +317,5 @@ end
 function a:startApp(callback)
   callback();
 end
-
-self.logger:log("Boot module loaded. heap=" .. node.heap());
 
 return a;
