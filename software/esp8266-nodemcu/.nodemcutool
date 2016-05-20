@@ -1,5 +1,5 @@
 {
-    "baudrate": "9600",
+    "baudrate": "230400",
     "port": "/dev/cu.SLAB_USBtoUART",
     "optimize": false,
     "compile": false,

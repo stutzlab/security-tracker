@@ -21,7 +21,7 @@ tmr.register(0, 1000, tmr.ALARM_SINGLE, function()
 
   if(runboot) then
     print("Launching boot...");
-    --dofile("launch.lua");
+    --dofile("!launcher.lua");
 
   else
     print("Skipping boot");
@@ -29,13 +29,3 @@ tmr.register(0, 1000, tmr.ALARM_SINGLE, function()
 end)
 
 tmr.start(0);
-
-
--- PUBLIC FUNCTIONS (functions that can be invoked by apps)
-function resetWatchdog()
-  dofile("util-watchdog.lua").reset();--5800
-end
-
-function incrementWatchdog()
-  dofile("util-watchdog.lua").increment();--5800
-end

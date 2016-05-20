@@ -27,59 +27,40 @@ function a.writeModule(sourceFile)
 
   local funcContents = "";
   local line = "";
-  local insideFunc = false;
   repeat
     file.open(sourceFile, "r");
---print("OPEN " .. sourceFile);
     --print("FSeek " .. filePos);
     file.seek("set", filePos);
---print("SEEK " .. filePos);
     line = file.read('\n');
---print("LINE " .. tostring(line));
-    if(line ~= nil) then
-      filePos = filePos + string.len(line);
-    end
---print("FILEPOS " .. filePos);
+    filePos = filePos + string.len(line);
     --print("FP " .. filePos .. "; " .. line);
-    if(line==nil or string.sub(line, 1, 8) == "function" or filePos == fileSize) then
+    if(string.sub(line, 1, 8) == "function" or filePos == fileSize) then
       --print("LOADING STRING TO LUA TABLE");
-        file.close();
-        local firstLine = string.sub(funcContents,1,string.find(funcContents, "\n"));
---print("FUNCCONTENTS=" .. funcContents);
-        --local funcContents2 = string.gsub(funcContents, "function%s+(.*[:.]).*", "");
-        local firstLine2 = string.gsub(firstLine, "(%s.*[:.])", " ", 1);
---print("FIRSTLINE2=" .. firstLine2);
-        --local funcName = string.match(funcContents, "function%s+.*[:.]+(.*)%(.*");
-        local funcName = string.match(firstLine2, "function%s+(.*)%(.*");
---print("FUNCNAME=" .. tostring(funcName));
-        if(funcName ~= nil) then
-          local funcContents2 = firstLine2 .. string.sub(funcContents,string.find(funcContents, "\n")+1);
---print("FUNCCONTENTS2=" .. funcContents2);
-          if(funcName ~= nil) then
-            local fn = string.format("#_%s_%s", moduleName, funcName);
-            if(string.len(fn)>31) then
-              error("FLASHMOD -- Function '" .. moduleName .. "." .. funcName .. "' name is too long (>31 chars). Shorten it by " .. (string.len(fn)-31) .. " chars.");
-            end
+      print("FLASHMOD -- Parsing " .. line);
+      file.close();
+      local funcPrefix = string.match(string.sub(funcContents,1,string.find(funcContents, "\n")), "function%s+(.*)[:.]");
+      local p = "z";
+      if(funcPrefix ~= nil) then
+        p = funcPrefix;
+        --print("FUNCPREFIX " .. funcPrefix);
+        --print("FUNCPREFIX contents=>>>" .. funcContents .. "<<<");
+      else
+        --print("FUNCPREFIX NOT FOUND contents=>>>" .. funcContents .. "<<<");
+      end
+      local tbl = loadstring("local " .. p .. "={};\n " .. funcContents .. "\n return " .. p .. ";")();
+      a.writeModuleTbl(tbl, moduleName);
 
-            local tmpFile = "#_tmp.lua";
-            file.open(tmpFile, "w+");
-            file.write(funcContents2);
-            file.close();
-
-            node.compile(tmpFile);
-print("COMPILED " .. fn);
-            file.rename("#_tmp.lc", fn);
-          end
-        end
-
-        --a.writeFunction(funcName, funcContents, moduleName);
-        if(line ~= nil) then
-          funcContents = line;
-        end
-        --print("FC " .. funcContents);
+      --a.writeFunction(funcName, funcContents, moduleName);
+      funcContents = line;
+      --print("NEW FUNC heap=" .. node.heap());
+      --print("FC " .. funcContents);
     else
       funcContents = funcContents .. line;
+      --print("ADDED FUNC heap=" .. node.heap());
       --print("FC " .. funcContents);
+      if(string.len(funcContents)>2500) then
+        error("FLASHMOD -- Function (".. string.sub(funcContents, 1, 20) ..") is too large. Break it in two or more methods keeping each function < 2500 bytes.");
+      end
     end
   until filePos == fileSize;
   --print("FINISHED READING FILE");
@@ -96,32 +77,35 @@ print("COMPILED " .. fn);
   return a.loadModule(moduleName);
 end
 
+function a.writeModuleTbl(tbl, moduleName)
+  --print("FLASHMOD -- Writing module element files to disk module=" .. moduleName);
+  for k,v in pairs(tbl) do
+    print("FLASHMOD - writeModule moduleName=" .. moduleName .. "; function="  .. k .. ". heap=" .. node.heap());
+    if type(v) == "function" then
+      a.writeFunction(k, v, moduleName);
+      tbl[k] = nil;
+      --print("wroteModuleFunc moduleName=" .. moduleName .. "; k=" .. k);
+    end
+  end
+end
+
 function a.writeFunction(funcName, funcContents, moduleName)
   local fn = string.format("#_%s_%s", moduleName, funcName);
-  if(string.len(fn)>30) then
-    error("FLASHMOD -- Function '" .. moduleName .. "." .. funcName .. "' name is too long (>31 chars). Shorten it by " .. (string.len(fn)-31) .. " chars.");
+  if(string.len(fn)>31) then
+    error("FLASHMOD -- Function '" .. moduleName .. "." .. funcName .. "' name is too long (>31). Shorten it by " .. (string.len(fn)-31) .. " chars.");
   end
 
   file.open(fn, "w+");
+  print("FLASHMOD -- About to dump function '" .. moduleName .. "."  .. funcName .. "'. heap=" .. node.heap());
   local status, result = pcall(string.dump, funcContents);
   if(status) then
+    print("FLASHMOD -- Dumped ok. len=" .. string.len(result) .. ". heap=" .. node.heap());
     file.write(result);
   else
     error("FLASHMOD -- Function '" .. moduleName .. "." .. funcName .. "' is too large. Break it in two or more methods keeping each function < 1900 bytes.");
   end
   file.close();
-end
 
-function a.writeModuleTbl(tbl, moduleName)
-  print("FLASHMOD -- Writing module element files to disk module=" .. moduleName);
-  for k,v in pairs(tbl) do
-    --print("writeModule moduleName=" .. moduleName .. "; function="  .. k);
-	if type(v) == "function" then
-      a.writeFunction(k, v, moduleName);
-      tbl[k] = nil;
-      --print("wroteModuleFunc moduleName=" .. moduleName .. "; k=" .. k);
-	end
-  end
 end
 
 function a.loadModule(moduleName)

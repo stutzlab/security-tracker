@@ -49,7 +49,7 @@ function a:updateApp(appInfoUrl, listener)
 
     else
       self.logger:log("UPDATE -- App info downloaded. data=" .. data);
-
+ 
       --VALIDATE DOWNLOADED APP INFO
       local appinfo_remote = cjson.decode(data);
       if(appinfo_remote.contents_size > 0 and appinfo_remote.name ~= nil
@@ -75,7 +75,7 @@ function a:updateApp(appInfoUrl, listener)
           end
 
           if(downloadNewApp) then
-            self:downloadAppFromServer(appinfo_remote, listener);
+            self:downloadAppFromSrv(appinfo_remote, listener);
           end
 
       else
@@ -87,7 +87,7 @@ function a:updateApp(appInfoUrl, listener)
   end)
 end
 
-function a:downloadAppFromServer(appinfo, listener)
+function a:downloadAppFromSrv(appinfo, listener)
 
   self.logger:log("app-UPDATE -- Checking if there is enough disk space for downloading the new App version... contents-size=" .. _app-info_remote.contents-size);
   local remaining, used, total = file.fsinfo();
@@ -116,33 +116,7 @@ function a:downloadAppFromServer(appinfo, listener)
   end);
 
   conn:on("disconnection", function(sck, c)
-    file.close();
-    self.logger:log("UPDATE -- Finished downloading new app contents to temp file. Checking it.");
-    local newFileHash = crypto.toHex(crypto.fhash(appContentsTemp));
-
-    if(newFileHash == appinfo.hash) then
-      self.logger:log("UPDATE -- Downloaded file contents hash is OK");
-
-      self.logger:log("UPDATE -- Removing current app info and app contents");
-      file.remove(self.INFO_FILE);
-      file.remove(self.APP_FILE);
-
-      self.logger:log("UPDATE - Replacing app info with new version");
-      file.open(cself.INFO_FILE, "w+");
-      file.write(cjson.encode(appinfo));
-      file.close();
-
-      self.logger:log("UPDATE - Replacing app contents with new version");
-      file.rename(appContentsTemp, self.APP_FILE);
-
-      listener("app-updated");
-
-    else
-      self.logger:log("UPDATE -- Downloaded file contents hash is NOT OK. expected=" .. _appinfo_remote.hash .. "; actual=" .. newFileHash);
-      --TODO: delete temp file?
-      listener("app-update-error");
-    end
-
+    self:downloadAppDisc(sck, listener);
   end);
 
   conn:on("connection", function(sck, c)
@@ -151,6 +125,33 @@ function a:downloadAppFromServer(appinfo, listener)
   end)
 
   conn:connect(appinfo.contents-port, appinfo.contents-host);
+end
+
+function a:downloadAppDisc(sck, listener)
+  file.close();
+  self.logger:log("UPDATE -- Finished downloading new app contents to temp file. Checking it.");
+  local newFileHash = crypto.toHex(crypto.fhash(appContentsTemp));
+
+  if(newFileHash == appinfo.hash) then
+    self.logger:log("UPDATE -- Downloaded file contents hash is OK");
+    self.logger:log("UPDATE -- Removing current app info and app contents");
+    file.remove(self.INFO_FILE);
+    file.remove(self.APP_FILE);
+    self.logger:log("UPDATE - Replacing app info with new version");
+    file.open(cself.INFO_FILE, "w+");
+    file.write(cjson.encode(appinfo));
+    file.close();
+
+    self.logger:log("UPDATE - Replacing app contents with new version");
+    file.rename(appContentsTemp, self.APP_FILE);
+
+    listener("app-updated");
+
+  else
+    self.logger:log("UPDATE -- Downloaded file contents hash is NOT OK. expected=" .. _appinfo_remote.hash .. "; actual=" .. newFileHash);
+    --TODO: delete temp file?
+    listener("app-update-error");
+  end
 end
 
 return a;

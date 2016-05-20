@@ -8,7 +8,7 @@ function a:init()
   self.watchdog = requireModule("_watchdog.lua");
   self.logger = requireModule("_log.lua");
   self.captive = requireModule("_captive.lua");
-  self.connectivity = requireModule("_connectivity.lua");
+  self.connectivity = requireModule("_conn.lua");
 end
 
 -- WIFI, REGISTRATION AND SANITY CHECKS
@@ -84,7 +84,8 @@ function a:verifyRegistration(callback)
       else
         if(validRegistration) then
           self.logger:log("REGISTRATION -- Device has account registration but is not connected to Internet");
-          self.runner:startApp(callback);
+          --return to launcher in order to start app!
+          callback();
 
         else
           self.logger:log("REGISTRATION -- Device is NOT connected to the Internet and needs registration. Incrementing watchdog and rebooting unit.");
@@ -192,7 +193,7 @@ function a:startCaptive(callback)
   self.logger:log("About to start captive portal. heap=" .. node.heap());
   self.captive:start(
     self.vendor.wifi_captive_ssid,
-    self.captive.wifiLoginRequestHandler,
+    self.captive.wifiLoginHandler,
     captiveTimeout, function(callback)
       if(event=="wifi_connect") then
         self.logger:log("BOOT -- Wifi connected");
@@ -302,7 +303,6 @@ function a:performFactoryReset()
   self.logger:log("BOOT -- Factory reset done. All non boot files were removed (including App package and data).");
 end
 
-
 function a:getAppInfoFromFile()
   if(file.open("app.info", "r")) then
     local _contents = file.read();
@@ -312,10 +312,6 @@ function a:getAppInfoFromFile()
     self.logger:log("BOOT -- File 'app.info' not found");
     return nil;
   end
-end
-
-function a:startApp(callback)
-  callback();
 end
 
 return a;
