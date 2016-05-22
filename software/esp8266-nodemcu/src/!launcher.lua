@@ -1,12 +1,12 @@
 print("Running boot... heap=" .. node.heap());
 
-dofile("_flashmod.lua");
+dofile("!flashmod.lua");
 local boot = requireModule("_boot.lua");
 --local boot = requireModule("boot-startapp.lua");
 
 boot.startup(function()
   collectgarbage();
-  print("Starting App... heap=" .. node.heap());
+  print("Starting App. heap=" .. node.heap());
   local runner = requireModule("_runner.lua");
   runner.startApp(function(result)
     collectgarbage();

@@ -30,20 +30,31 @@ gulp.task("default", ["upload"], function() {
 });
 
 gulp.task("upload", ["copy"], function() {
-  var result = gulp.src(["dist/!*.lua", "dist/_*.lua"])
+  var result = gulp.src(["dist/!*.lua", "dist/#_*"])
     .pipe(changed("dist/sent", {hasChanged: changed.compareSha1Digest}))
-    // .pipe(luaminify())
+    .pipe(luaminify())
     .pipe(shell("echo uploading dist/<%= file.relative %>"))
     .pipe(shell("nodemcu-tool upload --remotename=<%=file.relative%> dist/<%=file.relative%>"))
     .pipe(gulp.dest("dist/sent"));
   return result;
 });
 
-gulp.task("copy", function() {
-  var result = gulp.src(["src/**/!*.lua", "src/**/_*.lua"])
+gulp.task("copy", ["precompile"], function() {
+  var result = gulp.src("src/**/!*.lua")
     .pipe(changed("dist"))
     .pipe(flatten())
     // .pipe(luaminify())
     .pipe(gulp.dest("dist"));
+  return result;
+});
+
+gulp.task("precompile", function(callback) {
+  //precompile modules (prefixed by "_")
+  var result = gulp.src("src/**/_*.lua")
+    .pipe(flatten())
+    .pipe(changed("dist/process"))
+    // .pipe(luaminify())
+    .pipe(gulp.dest("dist/process"))
+    .pipe(shell("cd dist/process && lua ../../tools/flashmod-prepare2.lua <%= file.relative %> .."));
   return result;
 });

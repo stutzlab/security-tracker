@@ -43,36 +43,7 @@ function a:startApp(callback)
       startapp.utils = nil;--dealocate
       startapp.watchdog = nil;--dealocate
 
-      --load App from file
-      self.logger:log("RUNNER -- Loading App file. heap=" .. node.heap());
-      local status, app = pcall(dofile(config.app-contents_file));
-      if(status) then
-        self.logger:log("RUNNER -- App loaded SUCCESSFULLY. heap=" .. node.heap());
-        _app = app;
-
-        -- startup App
-        if(_app ~= nil and _app.getInfo ~= nil) then
-          print("RUNNER -- App info: " .. _app.getInfo());
-        end
-
-        if(_app.startup ~= nil) then
-          local status, err = pcall(_app.startup);
-          if(status) then
-            self.logger:log("RUNNER -- App startup() call was SUCCESSFUL. heap=" .. node.heap());
-            callback("app-startup-success");
-          else
-            self.logger:log("RUNNER -- App startup() call was UNSUCCESSFUL. heap=" .. node.heap() ..  "; err=" .. err);
-            callback("app-startup-error");
-          end
-        else
-          self.logger:log("RUNNER -- App didn't implement 'startup()' method");
-          callback("app-startup-error");
-        end
-
-      else
-        self.logger:log("RUNNER -- Failed to load App file. heap=" .. node.heap() .. "; err=" .. app);
-        callback("app-file-error");
-      end
+      a:loadAppFromFile();
 
     else
       self.logger:log("RUNNER -- App file hash doesn't match app info. App won't run. Activating captive portal.");
@@ -81,6 +52,39 @@ function a:startApp(callback)
 
   else
     self.logger:log("RUNNER -- File '".. config.app-contents_file .."' or '".. config.app-info_file .."' not found.");
+    callback("app-file-error");
+  end
+end
+
+function loadAppFromFile()
+  --load App from file
+  self.logger:log("RUNNER -- Loading App file. heap=" .. node.heap());
+  local status, app = pcall(dofile(config.app-contents_file));
+  if(status) then
+    self.logger:log("RUNNER -- App loaded SUCCESSFULLY. heap=" .. node.heap());
+    _app = app;
+
+    -- startup App
+    if(_app ~= nil and _app.getInfo ~= nil) then
+      print("RUNNER -- App info: " .. _app.getInfo());
+    end
+
+    if(_app.startup ~= nil) then
+      local status, err = pcall(_app.startup);
+      if(status) then
+        self.logger:log("RUNNER -- App startup() call was SUCCESSFUL. heap=" .. node.heap());
+        callback("app-startup-success");
+      else
+        self.logger:log("RUNNER -- App startup() call was UNSUCCESSFUL. heap=" .. node.heap() ..  "; err=" .. err);
+        callback("app-startup-error");
+      end
+    else
+      self.logger:log("RUNNER -- App didn't implement 'startup()' method");
+      callback("app-startup-error");
+    end
+
+  else
+    self.logger:log("RUNNER -- Failed to load App file. heap=" .. node.heap() .. "; err=" .. app);
     callback("app-file-error");
   end
 end

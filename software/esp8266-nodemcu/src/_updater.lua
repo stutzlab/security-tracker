@@ -49,7 +49,7 @@ function a:updateApp(appInfoUrl, listener)
 
     else
       self.logger:log("UPDATE -- App info downloaded. data=" .. data);
- 
+
       --VALIDATE DOWNLOADED APP INFO
       local appinfo_remote = cjson.decode(data);
       if(appinfo_remote.contents_size > 0 and appinfo_remote.name ~= nil

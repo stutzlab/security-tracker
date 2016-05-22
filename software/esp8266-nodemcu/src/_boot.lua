@@ -4,9 +4,9 @@ function a:init()
   self.vendor = dofile("!vendor.lua");
   self.constants = dofile("!constants.lua");
 
-  self.updater = requireModule("!updater.lua");
   self.watchdog = requireModule("_watchdog.lua");
   self.logger = requireModule("_log.lua");
+  self.updater = requireModule("_updater.lua");
   self.captive = requireModule("_captive.lua");
   self.connectivity = requireModule("_conn.lua");
 end
@@ -64,13 +64,13 @@ function a:verifyRegistration(callback)
           self.updater:tryUpdateAndStartApp();
 
         else
-          self.logger:log("APP -- Device is connected to the Internet and needs registration. Starting captive portal.");
+          self.logger:log("APP -- Device is connected to the Internet and needs registration");
 
           self.logger:log("REGISTRATION -- Initiating captive portal for device registration");
           self.captive:start(self.regCaptiveHandler, 10000, function()
 
             if(event == "registration-ok") then
-              self.logger:log("REGISTRATION -- Device registration successful");
+              self.logger:log("REGISTRATION -- Device registration successful.");
               self.updater:tryUpdateAndStartApp(callback);
 
             elseif(event == "registration-timeout") then
@@ -231,24 +231,7 @@ function a:regCaptiveHandler(path, params, responseCallback)
         "Content-Type: application/json\r\n",
         cjson.encode({account_id=params.username, account_password=params.password, hw_id=node.chipid()}),
         function(code, data)
-          if (code == 201) then
-
-            self.logger:log("REGISTRATION -- Device registration successful. response=" .. data);
-            local response = cjson.decode(data);
-            local registration = {
-              app_uid = response.app_uid,
-              account_id = response.account_id,
-              access_token = response.access_token,
-              refresh_token = response.refresh_token
-            }
-
-            buf, httpStatus, event = self:writeRegistrationFile();
-
-          else
-            self.logger:log("REGISTRATION -- App registration failed. code=" .. code .. "; data=" .. data);
-            buf = "{'result':'ERROR','message':'registration-failed','server-code':'" .. code .. ",'server-data':'".. data .."'}";
-            httpStatus = "400 Bad Request";
-          end
+          a:handleCaptiveRes(code, data);
       end);
 
     else
@@ -263,6 +246,28 @@ function a:regCaptiveHandler(path, params, responseCallback)
 
   responseCallback(httpStatus, mimeType, buf, event);
 end
+
+function a:handleCaptiveRes(code, data)
+  if (code == 201) then
+
+    self.logger:log("REGISTRATION -- Device registration successful. response=" .. data);
+    local response = cjson.decode(data);
+    local registration = {
+      app_uid = response.app_uid,
+      account_id = response.account_id,
+      access_token = response.access_token,
+      refresh_token = response.refresh_token
+    }
+
+    buf, httpStatus, event = self:writeRegistrationFile();
+
+  else
+    self.logger:log("REGISTRATION -- App registration failed. code=" .. code .. "; data=" .. data);
+    buf = "{'result':'ERROR','message':'registration-failed','server-code':'" .. code .. ",'server-data':'".. data .."'}";
+    httpStatus = "400 Bad Request";
+  end
+end
+
 
 function a:writeRegistrationFile(registration)
   local fo = file.open(self.constants.REGISTRATION_FILE, "w+");
