@@ -1,0 +1,6 @@
+[submodule "software/esp8266-firmware/homie-esp8266"]
+	path = software/esp8266-firmware/homie-esp8266
+	url = https://github.com/stutzlab/homie-esp8266.git
+[submodule "software/esp8266-firmware/lib/homie-esp8266"]
+	path = software/esp8266-firmware/lib/homie-esp8266
+	url = https://github.com/stutzlab/homie-esp8266.git
