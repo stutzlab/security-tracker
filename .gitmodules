@@ -4,3 +4,6 @@
 [submodule "software/esp8266-firmware/lib/homie-esp8266"]
 	path = software/esp8266-firmware/lib/homie-esp8266
 	url = https://github.com/stutzlab/homie-esp8266.git
+[submodule "tracker-firmware"]
+	path = software/tracker-firmware
+	url = https://github.com/stutzlab/tracker-firmware.git
