@@ -23,11 +23,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.11"
-     inkscape:cx="246.84241"
-     inkscape:cy="123.90099"
+     inkscape:zoom="2.59"
+     inkscape:cx="179.94218"
+     inkscape:cy="142.94861"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      showgrid="true"
      width="1052.36px"
      units="px"
@@ -1035,13 +1035,6 @@
          id="tspan5874"
          sodipodi:role="line"
          style="stroke-width:0.53149605">GPS Antenna</tspan></text>
-    <rect
-       style="fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149617;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect5845"
-       width="96.909447"
-       height="96.909454"
-       x="32.99147"
-       y="2112.8379" />
     <g
        id="g6227"
        transform="translate(-127.65878,265.5292)">
@@ -1118,28 +1111,22 @@
        id="path5817" />
     <path
        id="path5819"
-       d="m 217.2819,503.22743 a 5.1378104,5.13777 0 0 1 -5.1378,5.13779 5.1378104,5.13777 0 0 1 -5.1378,-5.13779 5.1378104,5.13777 0 0 1 5.1378,-5.1378 5.1378104,5.13777 0 0 1 5.1378,5.1378 z"
+       d="m 217.2819,2097.7156 a 5.1378104,5.13777 0 0 0 -5.1378,-5.1378 5.1378104,5.13777 0 0 0 -5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,-5.1378 z"
        style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.35433081;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       inkscape:connector-curvature="0"
-       transform="translate(0,1594.4882)" />
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 132.70384,2091.404 88.0382,0 0,123.4843 -88.0382,0 z"
-       id="rect5769" />
+       inkscape:connector-curvature="0" />
     <text
        sodipodi:linespacing="125%"
        id="text5821"
        y="599.16052"
        x="150.79735"
-       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:6.24954128px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.53149605;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:6.24954128px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.53149605;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        xml:space="preserve"
        transform="matrix(0.9999264,0,0,1.0000736,0,1594.4882)"><tspan
          y="599.16052"
          x="150.79735"
          id="tspan5823"
          sodipodi:role="line"
-         style="fill:#000000;stroke-width:0.53149605;stroke-miterlimit:4;stroke-dasharray:none;stroke:none;fill-opacity:1;">GPS GY-GPS6MV2</tspan></text>
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.53149605;stroke-miterlimit:4;stroke-dasharray:none">GPS GY-GPS6MV2</tspan></text>
     <path
        transform="translate(0,1594.4882)"
        inkscape:connector-curvature="0"
@@ -1151,9 +1138,9 @@
        transform="translate(-218.73464,263.8399)"
        id="g5968">
       <rect
-         style="fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.53149605, 1.06299209;stroke-dashoffset:0;stroke-opacity:1"
+         style="fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.53149606, 1.0629921;stroke-dashoffset:0;stroke-opacity:1"
          id="rect5972"
-         width="35.74297"
+         width="37.673473"
          height="9.236948"
          x="377.13196"
          y="1829.1122"
@@ -1161,15 +1148,126 @@
       <text
          sodipodi:linespacing="125%"
          id="text5974"
-         y="1836.6085"
-         x="388.45441"
-         style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:6.25px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         y="1835.6664"
+         x="378.4606"
+         style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:4.62119675px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
-           y="1836.6085"
-           x="388.45441"
+           y="1835.6664"
+           x="378.4606"
            id="tspan5976"
-           sodipodi:role="line">RX TX</tspan></text>
+           sodipodi:role="line">VCC RX TX GND</tspan></text>
     </g>
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.35433081;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 235.45278,2220.7056 a 5.1378104,5.13777 0 0 0 -5.1378,-5.1378 5.1378104,5.13777 0 0 0 -5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,-5.1378 z"
+       id="path9682" />
+    <path
+       id="path9686"
+       d="m 347.06695,2220.7056 a 5.1378104,5.13777 0 0 0 -5.1378,-5.1378 5.1378104,5.13777 0 0 0 -5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,-5.1378 z"
+       style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.35433081;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:connector-curvature="0" />
+    <path
+       id="path9690"
+       d="m 235.45278,2102.0034 a 5.1378104,5.13777 0 0 0 -5.1378,-5.1378 5.1378104,5.13777 0 0 0 -5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,-5.1378 z"
+       style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.35433081;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.35433081;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 347.06695,2102.0034 a 5.1378104,5.13777 0 0 0 -5.1378,-5.1378 5.1378104,5.13777 0 0 0 -5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,5.1378 5.1378104,5.13777 0 0 0 5.1378,-5.1378 z"
+       id="path9692" />
+    <text
+       transform="scale(0.9999264,1.0000736)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:6.24954128px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.53149605;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="253.62624"
+       y="2194.1992"
+       id="text9719"
+       sodipodi:linespacing="125%"><tspan
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.53149605;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:role="line"
+         id="tspan9721"
+         x="253.62624"
+         y="2194.1992">StutzThings Board ESP12</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.53149606, 1.06299208;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect9726"
+       width="60.453388"
+       height="9.236948"
+       x="238.12465"
+       y="2098.3574"
+       ry="3.2128515" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text9728"
+       y="2105.3926"
+       x="238.89757"
+       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:5.67030096px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         y="2105.3926"
+         x="238.89757"
+         id="tspan9730"
+         sodipodi:role="line">GND VCC VCC RX TX</tspan></text>
+    <rect
+       ry="3.2128515"
+       y="2098.3574"
+       x="299.86887"
+       height="9.236948"
+       width="33.812462"
+       id="rect9735"
+       style="fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.53149606, 1.06299208;stroke-dashoffset:0;stroke-opacity:1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:4.78856754px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="301.10593"
+       y="2105.0269"
+       id="text9737"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan9739"
+         x="301.10593"
+         y="2105.0269">GND  DTR CTS</tspan></text>
+    <rect
+       ry="3.2128515"
+       y="-233.9395"
+       x="2125.0657"
+       height="9.236948"
+       width="73.580803"
+       id="rect9741"
+       style="fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.53149607, 1.06299209;stroke-dashoffset:0;stroke-opacity:1"
+       transform="matrix(0,1,-1,0,0,0)" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:5.98623943px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="2128.7939"
+       y="-226.7478"
+       id="text9743"
+       sodipodi:linespacing="125%"
+       transform="matrix(0,1,-1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan9745"
+         x="2128.7939"
+         y="-226.7478">SD CARD CONNECTOR</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.53149606, 1.06299208;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect9747"
+       width="28.407057"
+       height="9.236948"
+       x="273.32819"
+       y="2215.3777"
+       ry="3.2128515" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text9749"
+       y="2222.1194"
+       x="278.168"
+       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:5.32447958px;line-height:125%;font-family:'.HeitiUI J';-inkscape-font-specification:'.HeitiUI J, Ultra-Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         y="2222.1194"
+         x="278.168"
+         id="tspan9751"
+         sodipodi:role="line">POWER</tspan></text>
   </g>
   <g
      transform="translate(0,1594.4882)"
@@ -4844,7 +4942,7 @@
        id="path6248" />
     <path
        id="path6282"
-       d="m 216.27149,503.22738 a 4.1272269,4.1271364 0 0 1 -4.12722,4.1272 4.1272269,4.1271364 0 0 1 -4.12708,-4.1272 4.1272269,4.1271364 0 0 1 4.12708,-4.1271 4.1272269,4.1271364 0 0 1 4.12722,4.1271 z"
+       d="m 216.27149,503.22747 a 4.1272269,4.1271364 0 0 0 -4.12722,-4.1272 4.1272269,4.1271364 0 0 0 -4.12708,4.1272 4.1272269,4.1271364 0 0 0 4.12708,4.1271 4.1272269,4.1271364 0 0 0 4.12722,-4.1271 z"
        style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:connector-curvature="0" />
     <path
@@ -4971,14 +5069,6 @@
          x="297.78625"
          id="tspan6043"
          sodipodi:role="line">GPIO</tspan></text>
-    <rect
-       transform="matrix(0,1,-1,0,0,0)"
-       y="-348.89279"
-       x="499.60098"
-       height="125.2559"
-       width="134.11417"
-       id="rect6045"
-       style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149593;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <path
        inkscape:connector-curvature="0"
        style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -4999,6 +5089,26 @@
        style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="m 342.28134,426.29758 a 4.1271364,4.1272269 0 0 1 -4.1271,-4.12722 4.1271364,4.1272269 0 0 1 4.1271,-4.12708 4.1271364,4.1272269 0 0 1 4.1272,4.12708 4.1271364,4.1272269 0 0 1 -4.1272,4.12722 z"
        id="path6053" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 234.44237,626.22717 a 4.1272269,4.1271364 0 0 0 -4.12722,-4.1272 4.1272269,4.1271364 0 0 0 -4.12708,4.1272 4.1272269,4.1271364 0 0 0 4.12708,4.1271 4.1272269,4.1271364 0 0 0 4.12722,-4.1271 z"
+       id="path9684" />
+    <path
+       id="path9688"
+       d="m 346.05654,626.22717 a 4.1272269,4.1271364 0 0 0 -4.12722,-4.1272 4.1272269,4.1271364 0 0 0 -4.12708,4.1272 4.1272269,4.1271364 0 0 0 4.12708,4.1271 4.1272269,4.1271364 0 0 0 4.12722,-4.1271 z"
+       style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:connector-curvature="0" />
+    <path
+       id="path9694"
+       d="m 234.44237,507.52676 a 4.1272269,4.1271364 0 0 0 -4.12722,-4.1272 4.1272269,4.1271364 0 0 0 -4.12708,4.1272 4.1272269,4.1271364 0 0 0 4.12708,4.1271 4.1272269,4.1271364 0 0 0 4.12722,-4.1271 z"
+       style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 346.05654,507.52676 a 4.1272269,4.1271364 0 0 0 -4.12722,-4.1272 4.1272269,4.1271364 0 0 0 -4.12708,4.1272 4.1272269,4.1271364 0 0 0 4.12708,4.1271 4.1272269,4.1271364 0 0 0 4.12722,-4.1271 z"
+       id="path9696" />
   </g>
   <g
      transform="translate(0,1594.4882)"
@@ -5195,6 +5305,28 @@
       <g
          id="g7943" />
     </g>
+    <rect
+       style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149617;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect5845"
+       width="96.909447"
+       height="96.909454"
+       x="32.99147"
+       y="2112.8379"
+       transform="translate(0,-1594.4882)" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 132.70384,2091.404 88.0382,0 0,123.4843 -88.0382,0 z"
+       id="rect5769"
+       transform="translate(0,-1594.4882)" />
+    <rect
+       transform="matrix(0,1,-1,0,0,0)"
+       y="-348.89279"
+       x="499.60098"
+       height="125.2559"
+       width="134.11417"
+       id="rect6045"
+       style="display:inline;opacity:1;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149593;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
   </g>
   <g
      inkscape:groupmode="layer"
