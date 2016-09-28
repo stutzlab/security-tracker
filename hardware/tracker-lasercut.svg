@@ -24,10 +24,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.59"
-     inkscape:cx="179.94218"
-     inkscape:cy="142.94861"
+     inkscape:cx="226.27423"
+     inkscape:cy="96.616564"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="true"
      width="1052.36px"
      units="px"
@@ -5109,6 +5109,14 @@
        style="display:inline;opacity:0.31799999;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149605;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="m 346.05654,507.52676 a 4.1272269,4.1271364 0 0 0 -4.12722,-4.1272 4.1272269,4.1271364 0 0 0 -4.12708,4.1272 4.1272269,4.1271364 0 0 0 4.12708,4.1271 4.1272269,4.1271364 0 0 0 4.12722,-4.1271 z"
        id="path9696" />
+    <rect
+       style="display:inline;opacity:1;fill:none;fill-opacity:0.67901234;stroke:#000000;stroke-width:0.53149593;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect5987"
+       width="84.693314"
+       height="83.55706"
+       x="524.21698"
+       y="-331.99603"
+       transform="matrix(0,1,-1,0,0,0)" />
   </g>
   <g
      transform="translate(0,1594.4882)"
